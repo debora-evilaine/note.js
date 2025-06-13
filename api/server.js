@@ -12,8 +12,8 @@ const app = express();
 app.use(express.json());
 
 // Importando rotas
-const userRoutes = require('./routes/userRoutes');
-const noteRoutes = require('./routes/noteRoutes');
+const userRoutes = require('./src/routes/userRoutes');
+const noteRoutes = require('./src/routes/noteRoutes');
 
 // Conexão do MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
