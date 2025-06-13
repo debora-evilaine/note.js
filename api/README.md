@@ -16,7 +16,7 @@ npm run dev
 **POST**
 
 ```
-/register
+/api/users/register
 
 body: 
     user
@@ -35,7 +35,7 @@ response:
 ---
 
 ```
-/login
+/api/users/login
 
 body: 
     user
