@@ -7,23 +7,35 @@ body {
 
 header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    background: #007bff;
-    color: white;
-    padding: 10px;
+    background: #dceaf7;
+    /* Cor ajustada */
+    color: black;
+    padding: 20px;
 }
+
+header h1 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: monospace;
+}
+
 
 textarea,
 input {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
+    font-family: monospace;
 }
 
 button {
-    background: #28a745;
-    color: white;
+    background: #c4d6e7;
+    color: black;
+    font-weight: bold;
+    font-family: monospace;
     border: none;
     padding: 10px;
     cursor: pointer;
