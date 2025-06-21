@@ -14,4 +14,4 @@ Its main objective is to utilize the knowledge acquired in the course to create 
 
 ## API DOC
 
-[Link Text](api/README.md)
+[API DOC](api/README.md)
