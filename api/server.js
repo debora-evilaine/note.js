@@ -14,6 +14,7 @@ app.use(express.json());
 // Importando rotas
 const userRoutes = require('./src/routes/userRoutes');
 const noteRoutes = require('./src/routes/noteRoutes');
+const tagRoutes = require('./src/routes/tagRoutes');
 
 // Conexão do MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -23,6 +24,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/notes', noteRoutes);
+app.use('/api/tags', tagRoutes);
 
 // Iniciando Servidor
 const PORT = process.env.PORT || 5000;
