@@ -1,6 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const Note = require('../models/Notes');  // Aqui  importa  models/Note
+const Note = require('../models/Notes');  // Aqui  importa  models/Notes
 const router = express.Router();
 
 console.log('Note:', Note);
