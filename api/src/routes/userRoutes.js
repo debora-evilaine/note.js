@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt'); // Para comparar senha
-const User = require('../models/User'); // Ajuste o caminho conforme seu projeto
+const bcrypt = require('bcrypt'); // Serve para comparar senha
+const User = require('../models/User'); // importa o models/User para interagir com a coleção de usuários no banco de dado
+
 
 // Registrar usuário
 router.post('/register', async (req, res) => {
@@ -48,7 +49,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Usuário ou senha incorretos' });
     }
 
-    // Cria o token JWT
+    // Cria o token JWT, válido por 1 hora
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.json({ token });
