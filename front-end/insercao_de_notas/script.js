@@ -1,4 +1,3 @@
-// Aplicação de Notas em JavaScript Puro
 class NotesApp {
   constructor() {
     this.notes = []
@@ -6,7 +5,6 @@ class NotesApp {
     this.isEditing = false
     this.searchTerm = ""
 
-    // Estados do formulário
     this.currentTitle = ""
     this.currentTags = ""
     this.currentContent = ""
@@ -22,9 +20,9 @@ class NotesApp {
   createNewNote() {
     const newNote = {
       id: Date.now().toString(),
-      title: "Nota sem título", // Corrigido aqui
+      title: "Nota sem título", 
       tags: [],
-      content: "# Bem-vindo à sua nota!\n\nComece a escrever em **markdown** aqui...", // Corrigido aqui
+      content: "# Bem-vindo à sua nota!\n\nComece a escrever em **markdown** aqui...", 
       createdAt: new Date(),
       updatedAt: new Date(),
     }
@@ -52,7 +50,7 @@ class NotesApp {
       .map((tag) => tag.trim())
       .filter((tag) => tag.length > 0)
 
-    this.selectedNote.title = this.currentTitle || "Nota sem título" // Corrigido aqui
+    this.selectedNote.title = this.currentTitle || "Nota sem título" 
     this.selectedNote.tags = tags
     this.selectedNote.content = this.currentContent
     this.selectedNote.updatedAt = new Date()
@@ -62,8 +60,6 @@ class NotesApp {
   }
 
   deleteNote(noteId) {
-    // Mantido o uso de confirm(), pois foi o que o usuário forneceu.
-    // Lembre-se que em um ambiente real, um modal personalizado seria melhor.
     if (confirm("Tem certeza de que deseja deletar essa nota?")) {
       this.notes = this.notes.filter((note) => note.id !== noteId)
       if (this.selectedNote && this.selectedNote.id === noteId) {
@@ -87,7 +83,6 @@ class NotesApp {
   }
 
   bindGlobalEvents() {
-    // Atalhos de teclado
     document.addEventListener("keydown", (e) => {
       if (e.ctrlKey || e.metaKey) {
         if (e.key === "s" && this.isEditing) {
@@ -103,8 +98,7 @@ class NotesApp {
   }
 
   renderMarkdown(text) {
-    // Uma implementação básica de renderização Markdown para demonstração.
-    // Em uma aplicação real, uma biblioteca Markdown seria usada.
+    
     return text
       .replace(/^### (.*$)/gim, "<h3>$1</h3>")
       .replace(/^## (.*$)/gim, "<h2>$1</h2>")
@@ -122,7 +116,7 @@ class NotesApp {
   }
 
   getPreviewText(content) {
-    // Remove caracteres Markdown para a pré-visualização e limita o tamanho
+
     return content.replace(/[#*`]/g, "").substring(0, 100) + "..."
   }
 
@@ -337,5 +331,4 @@ class NotesApp {
   }
 }
 
-// Inicializa a aplicação
 const app = new NotesApp()
