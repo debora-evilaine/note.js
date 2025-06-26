@@ -3,9 +3,14 @@ const bcrypt =require('bcryptjs');
 
 //User Schema
 const userSchema = new mongoose.Schema({
-    username:{type: String, required: true, unique: true},
+      name: { type: String, required: true },
+    email: { type: String, required: true, unique: true, match: [/.+\@.+\..+/, 'Por favor, insira um e-mail válido']  },// Validação de e-mail
     password: {type: String, required: true},
+
 });
+
+
+
 
 //Hash da senha antes do usuario salvar
 

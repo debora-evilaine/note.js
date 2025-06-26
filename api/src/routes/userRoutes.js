@@ -1,60 +1,97 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt'); // Serve para comparar senha
-const User = require('../models/User'); // importa o models/User para interagir com a coleção de usuários no banco de dado
+const bcrypt = require('bcrypt');
+const User = require('../models/User');
 
+// Validador de e-mail melhorado
+const validateEmail = (email) => {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+};
 
 // Registrar usuário
 router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+  const { name, email, password } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Por favor, forneça nome de usuário e senha' });
+  // Validações mais robustas
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: 'Por favor, forneça o nome, e-mail e senha' });
   }
 
-  try {
-    // Apenas cria o usuário — a senha será criptografada pelo hook pre-save do modelo User
-    const user = await User.create({ username, password });
+  if (!validateEmail(email)) {
+    return res.status(400).json({ error: 'E-mail inválido' });
+  }
 
-    res.status(201).json({ message: 'Usuário registrado com sucesso' });
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'A senha deve ter pelo menos 6 caracteres' });
+  }
+
+  try { 
+    const user = await User.create({ 
+      name,
+      email: email.toLowerCase().trim(), // Normaliza o e-mail
+      password
+    });
+
+    res.status(201).json({ 
+      message: 'Usuário registrado com sucesso',
+      user: {
+        id: user._id,
+        nome: user.name,
+        email: user.email
+      }
+    });
   } catch (error) {
-    // Se for erro de duplicidade de nome de usuário, informe o usuário
     if (error.code === 11000) {
-      return res.status(400).json({ message: 'Nome de usuário já existe' });
+      return res.status(409).json({ error: 'E-mail já cadastrado' }); // 409 Conflict
     }
-    res.status(500).json({ message: 'Erro ao registrar usuário', error: error.message });
+    res.status(500).json({ 
+      error: 'Erro ao registrar usuário',
+      details: error.message 
+    });
   }
 });
 
 // Login do usuário
 router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Credenciais inválidas' });
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Por favor, forneça e-mail e senha' });
   }
 
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
 
     if (!user) {
-      return res.status(401).json({ message: 'Usuário ou senha incorretos' });
+      return res.status(401).json({ error: 'Credenciais inválidas' }); // Mensagem genérica por segurança
     }
 
-    // Compara senha enviada com o hash do banco
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Usuário ou senha incorretos' });
+      return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
-    // Cria o token JWT, válido por 1 hora
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
-    res.json({ token });
+    res.json({ 
+      token,
+      user: {
+        id: user._id,
+        email: user.email
+      }
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao realizar login', error: error.message });
+    res.status(500).json({ 
+      error: 'Erro ao realizar login',
+      details: error.message 
+    });
   }
 });
 
