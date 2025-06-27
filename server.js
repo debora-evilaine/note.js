@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 require('dotenv').config();
@@ -8,6 +9,7 @@ console.log('Mongo URI:', process.env.MONGO_URI);  // <-- Aqui, para conferir a 
 
 const app = express();
 
+app.use(cors());
 // Middleware to parse JSON
 app.use(express.json());
 

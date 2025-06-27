@@ -14,7 +14,9 @@ class NotesApp {
     this.currentContent = ""
 
     this.init()
+
   }
+
 
   init() {
     this.render()
@@ -116,6 +118,28 @@ class NotesApp {
     this.selectedNote.updatedAt = new Date()
 
     this.isEditing = false
+
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NWRmM2M4YzM2MDI3ZDRmMmQ5ZDU5YSIsImlhdCI6MTc1MDk4Nzc1MCwiZXhwIjoxNzUwOTkxMzUwfQ.xkzY5zfKldMqWjBht7XCjw0_HX9SjzyZl4529Kqw2ys'
+
+    fetch('http://localhost:5000/api/notes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        title: this.selectedNote.title,
+        content: this.selectedNote.content
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Resposta:', data);
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+      });
+
     this.render()
   }
 
