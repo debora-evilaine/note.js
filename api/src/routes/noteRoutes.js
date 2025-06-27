@@ -61,17 +61,18 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-router.get('/:noteName', authenticate, async (req, res) => {
-  const name = req.query.noteName;
+// Find note by title text
+router.get('/:search', authenticate, async (req, res) => {
+  const name = req.query.search;
   const { page = 1, limit = 10 } = req.query;
  
   try{
-    const notes = await Node.find({name: {$search: noteName}})
+    const notes = await Node.find({name: {$search: search}})
       .limit(Number(limit))
       .skip((page - 1) * limit)
       .exec();
     
-    const count = await Note.countDocuments({ $search: noteName});
+    const count = await Note.countDocuments({ $search: search});
 
     res.json({
       notes,
