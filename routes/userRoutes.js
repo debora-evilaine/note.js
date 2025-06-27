@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); // Para comparar senha
-const User = require('../models/User'); // Ajuste o caminho conforme seu projeto
+const User = require('../models/User');
 
 // Registrar usuário
 router.post('/register', async (req, res) => {
