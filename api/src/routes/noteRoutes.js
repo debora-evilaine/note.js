@@ -61,4 +61,26 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
+router.get('/:noteName', authenticate, async (req, res) => {
+  const name = req.query.noteName;
+  const { page = 1, limit = 10 } = req.query;
+ 
+  try{
+    const notes = await Node.find({name: {$search: noteName}})
+      .limit(Number(limit))
+      .skip((page - 1) * limit)
+      .exec();
+    
+    const count = await Note.countDocuments({ $search: noteName});
+
+    res.json({
+      notes,
+      totalPages: Math.ceil(count / limit),
+      currentPage: parseInt(page),
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao buscar as notas', error: error.message });
+  }
+})
+
 module.exports = router;

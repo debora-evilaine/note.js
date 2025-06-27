@@ -153,6 +153,34 @@ All API endpoints are prefixed with `/api`. Authentication is required for most 
         * `401 Unauthorized`: If no token is provided or token is invalid.
         * `500 Internal Server Error`: For other server-side errors.
 
+* **`GET /api/notes` - Get all notes with pagination**
+    * **Description**: Retrieves all notes by text belonging to the authenticated user with optional pagination.
+    * **Query Parameters**:
+        * `search`: Search text of the note title. 
+        * `page` (optional): Page number (default: 1).
+        * `limit` (optional): Number of notes per page (default: 10).
+    * **Success Response (200 OK)**:
+        ```json
+        {
+            "notes": [
+                {
+                    "_id": "60c72b2f9b1d8c001c8e4a1a",
+                    "title": "My first note",
+                    "content": "This is the content of my first note.",
+                    "user": "60c72b2f9b1d8c001c8e4a1b",
+                    "createdAt": "2023-10-27T10:00:00.000Z",
+                    "updatedAt": "2023-10-27T10:00:00.000Z",
+                    "__v": 0
+                }
+            ],
+            "totalPages": 1,
+            "currentPage": 1
+        }
+        ```
+    * **Error Responses**:
+        * `401 Unauthorized`: If no token is provided or token is invalid.
+        * `500 Internal Server Error`: For other server-side errors.
+
 ### 3. Tag Routes (`/api/tags`)
 
 * **Authentication Required**
