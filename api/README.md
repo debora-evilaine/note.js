@@ -153,10 +153,10 @@ All API endpoints are prefixed with `/api`. Authentication is required for most 
         * `401 Unauthorized`: If no token is provided or token is invalid.
         * `500 Internal Server Error`: For other server-side errors.
 
-* **`GET /api/notes` - Get all notes with pagination**
-    * **Description**: Retrieves all notes by text belonging to the authenticated user with optional pagination.
+* **`GET /api/notes` - Get notes by search terms with pagination**
+    * **Description**: Retrieves notes by search terms belonging to the authenticated user with optional pagination.
     * **Query Parameters**:
-        * `search`: Search text of the note title. 
+        * `search`: Search text by terms of the note title. 
         * `page` (optional): Page number (default: 1).
         * `limit` (optional): Number of notes per page (default: 10).
     * **Success Response (200 OK)**:
