@@ -12,7 +12,8 @@ class NotesApp {
     this.currentTitle = ""
     this.currentNoteTags = []
     this.currentContent = ""
-    this.token = ""
+    //this.token = ""
+    this.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NWRmM2M4YzM2MDI3ZDRmMmQ5ZDU5YSIsImlhdCI6MTc1MDk4OTczNywiZXhwIjoxNzUwOTkzMzM3fQ.WoWrBm1Ext9GgE1Nml3pBk9LZSoqZyLLHgH0EhMTvaM"
 
     this.init()
 
@@ -60,6 +61,26 @@ class NotesApp {
 
     this.tags.push(newTag)
     this.showingTagForm = false
+
+    fetch('http://localhost:5000/api/tags', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + this.token
+      },
+      body: JSON.stringify({
+        name: newTag.name,
+        color: newTag.color
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Resposta:', data);
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+      });
+
     this.render()
   }
 
@@ -120,7 +141,6 @@ class NotesApp {
 
     this.isEditing = false
 
-    this.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NWRmM2M4YzM2MDI3ZDRmMmQ5ZDU5YSIsImlhdCI6MTc1MDk4Nzc1MCwiZXhwIjoxNzUwOTkxMzUwfQ.xkzY5zfKldMqWjBht7XCjw0_HX9SjzyZl4529Kqw2ys'
 
     fetch('http://localhost:5000/api/notes', {
       method: 'POST',
