@@ -59,8 +59,6 @@ class NotesApp {
       noteIds: [],
     }
 
-    this.tags.push(newTag)
-    this.showingTagForm = false
 
     fetch('http://localhost:5000/api/tags', {
       method: 'POST',
@@ -80,6 +78,9 @@ class NotesApp {
       .catch(error => {
         console.error('Erro:', error);
       });
+
+    this.tags.push(newTag)
+    this.showingTagForm = false
 
     this.render()
   }
