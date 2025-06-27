@@ -12,6 +12,7 @@ class NotesApp {
     this.currentTitle = ""
     this.currentNoteTags = []
     this.currentContent = ""
+    this.token = ""
 
     this.init()
 
@@ -119,13 +120,13 @@ class NotesApp {
 
     this.isEditing = false
 
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NWRmM2M4YzM2MDI3ZDRmMmQ5ZDU5YSIsImlhdCI6MTc1MDk4Nzc1MCwiZXhwIjoxNzUwOTkxMzUwfQ.xkzY5zfKldMqWjBht7XCjw0_HX9SjzyZl4529Kqw2ys'
+    this.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NWRmM2M4YzM2MDI3ZDRmMmQ5ZDU5YSIsImlhdCI6MTc1MDk4Nzc1MCwiZXhwIjoxNzUwOTkxMzUwfQ.xkzY5zfKldMqWjBht7XCjw0_HX9SjzyZl4529Kqw2ys'
 
     fetch('http://localhost:5000/api/notes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
+        'Authorization': 'Bearer ' + this.token
       },
       body: JSON.stringify({
         title: this.selectedNote.title,
