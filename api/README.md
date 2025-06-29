@@ -153,6 +153,35 @@ All API endpoints are prefixed with `/api`. Authentication is required for most 
         * `401 Unauthorized`: If no token is provided or token is invalid.
         * `500 Internal Server Error`: For other server-side errors.
 
+* **`GET /api/notes` - Get notes by search terms with pagination**
+    * **Description**: Retrieves notes by search terms belonging to the authenticated user with optional pagination.
+    * **Query Parameters**:
+        * `search`: Search text by terms of the note title. 
+        * `page` (optional): Page number (default: 1).
+        * `limit` (optional): Number of notes per page (default: 10).
+    * **Success Response (200 OK)**:
+        ```json
+        {
+            "notes": [
+                {
+                    "_id": "60c72b2f9b1d8c001c8e4a1a",
+                    "title": "My first note",
+                    "content": "This is the content of my first note.",
+                    "user": "60c72b2f9b1d8c001c8e4a1b",
+                    "createdAt": "2023-10-27T10:00:00.000Z",
+                    "updatedAt": "2023-10-27T10:00:00.000Z",
+                    "__v": 0
+                }
+            ],
+            "totalPages": 1,
+            "currentPage": 1
+        }
+        ```
+    * **Error Responses**:
+        * `400 Bad Request`: If `serachTerms` is missing.
+        * `401 Unauthorized`: If no token is provided or token is invalid.
+        * `500 Internal Server Error`: For other server-side errors.
+
 ### 3. Tag Routes (`/api/tags`)
 
 * **Authentication Required**
@@ -231,7 +260,7 @@ All API endpoints are prefixed with `/api`. Authentication is required for most 
         * `401 Unauthorized`: If no token is provided or token is invalid.
         * `500 Internal Server Error`: For other server-side errors.
 
-* **`GET /api/tags/note/:noteId` - Get tags for a specific note**
+* **`GET /api/tags/note` - Get tags for a specific note**
     * **Description**: Retrieves all tags associated with a specific note for the authenticated user.
     * **URL Parameters**:
         * `noteId`: The ID of the note.
@@ -261,9 +290,31 @@ All API endpoints are prefixed with `/api`. Authentication is required for most 
         }
         ```
     * **Error Responses**:
-        * `404 Not Found`: If the `noteId` is not found.
+        * `400 Bad Request`: If `noteId` are missing.
         * `401 Unauthorized`: If no token is provided or token is invalid.
+        * `404 Not Found`: If the note not found.
         * `500 Internal Server Error`: For other server-side errors.
+
+* **`GET /api/tags/notesbyTag` - Search notes by tags**
+    * **Description**: Retrieves all notes from name search for the authenticated user.
+        * **URL Parameters**:
+            * `tagId`: The ID(s) of the tags.
+        * **Success Response (200 OK)**:
+            ```json
+            {
+                "_id": "60c72b2f9b1d8c001c8e4a1d",
+                "tagId": "60c72b2f9b1d8c001c8e4a1c",
+                "noteId": "60c72b2f9b1d8c001c8e4a1a",
+                "user": "60c72b2f9b1d8c001c8e4a1b",
+                "createdAt": "2023-10-27T10:00:00.000Z",
+                "updatedAt": "2023-10-27T10:00:00.000Z",
+                "__v": 0
+            }
+            ```
+        * **Error Responses**:
+            * `400 Not Found`: If the `tagId` is missing.
+            * `401 Unauthorized`: If no token is provided or token is invalid.
+            * `500 Internal Server Error`: For other server-side errors.
 
 ## Data Models
 
