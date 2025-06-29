@@ -1,12 +1,10 @@
 const express = require('express');
+const mongoose= require('mongoose');
 const jwt = require('jsonwebtoken');
 const Tag = require('../models/Tags');  // Aqui  importa  models/Tags
 const NoteTag = require('../models/NotesTags');
 const Note = require('../models/Notes');
 const router = express.Router();
-
-console.log('Tag:', Tag);
-console.log('Tag.find:', Tag.find);
 
 // Middleware para verificar JWT
 const authenticate = (req, res, next) => {
@@ -52,15 +50,87 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
+// Get notes by tag(s)
+router.get("/notesBytag", authenticate, async (req, res) => {
+  let { tagId } = req.query;
+
+  if (!tagId) {
+    return res.status(400).json({ message: 'Por favor, forneça um ou mais IDs de tags.' });
+  }
+
+  try {
+    let tagIdsArray;
+    if (typeof tagId === 'string') {
+        tagIdsArray = tagId.split(',');
+    } else if (Array.isArray(tagId)) {
+      tagIdsArray = tagId
+    } else {
+      return res.status(400).json({ message: 'Formato de ID de tag inválido. Esperado string ou array.' });
+    }
+
+    const notes = await NoteTag.aggregate([
+      {
+        $match: {
+          tagId: { $in: tagIdsArray }
+        }
+      },
+      {
+        $group: {
+          _id: "$noteId",
+          tagCount: { $sum: 1 }
+        }
+      },
+      {
+        $addFields: {
+            convertedNoteId: { $toObjectId: "$_id" }
+        }
+      },
+      {
+        $lookup: {
+          from: Note.collection.name,
+          localField: "convertedNoteId", 
+          foreignField: "_id",
+          as: "note"
+        }
+      },
+      {
+        $unwind: "$note",
+      },
+      {
+        $project: {
+            _id: "$note._id",
+            title: "$note.title",
+            content: "$note.content",
+            user: "$note.user",
+            createdAt: "$note.createdAt",
+            updatedAt: "$note.updatedAt",
+            __v: "$note.__v",
+            tagCount: 1
+        }
+      }
+    ]);
+
+    const resultNotes = notes.filter((note) => note.tagCount === tagIdsArray.length);
+    res.json({ notes: resultNotes });
+
+  } catch (error) {
+    console.error("Error ao buscar notas por tags:", error); 
+    if (error.message.includes('ID de tag inválido')) {
+      return res.status(400).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'Erro ao buscar notas por tags.', error: error.message });
+  }
+});
+
 // Relacionar tag a uma anotação
 router.post("/note", authenticate, async (req, res) => {
     const { tagId, noteId } = req.body;
     
     try {
         if((await Tag.findById(tagId)) == null)
-            return res.status(400).json({ message: 'Não foi possivel encontrar a tag informada.' });
+            return res.status(404).json({ message: 'Não foi possivel encontrar a tag informada.' });
         else if((Note.findById(noteId)) == null)
-            return res.status(400).json({ message: 'Não foi possivel encontrar anotação.' });
+            return res.status(404).json({ message: 'Não foi possivel encontrar anotação.' });
         
         const noteTag = await NoteTag.create({tagId, noteId, user: req.userId});
         res.status(201).json(noteTag);
@@ -70,13 +140,16 @@ router.post("/note", authenticate, async (req, res) => {
 })
 
 // Pegar tags de anotação
-router.get("/note/:noteId", authenticate, async (req, res) => {
-    const { noteId } = req.params; // Destructure for cleaner access
+router.get("/note", authenticate, async (req, res) => {
+    const { noteId } = req.query; // Destructure for cleaner access
+
+    if(!noteId)
+      return res.status(400).json({ message: '' });
 
     try {
         const note = await Note.findOne({ _id: noteId, user: req.userId });
         if (!note) {
-            return res.status(404).json({ message: 'Não foi possível encontrar a anotação.' }); // Use 404 for not found
+            return res.status(404).json({ message: 'Não foi possível encontrar a anotação.' });
         }
 
         const noteTags = await NoteTag.find({ noteId, user: req.userId });
