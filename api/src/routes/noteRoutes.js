@@ -127,5 +127,32 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
+// Find note by title text
+router.get('/search', authenticate, async (req, res) => {
+  const searchTerms = req.query.searchTerms;
+  const { page = 1, limit = 10 } = req.query;
+
+  if (!searchTerms) {
+    return res.status(400).json({ message: 'Por favor, forneça um termo para pesquisa' });
+  }
+
+  try{
+    const notes = await Note.find({$text: { $search: searchTerms}, user: req.userId})
+      .limit(Number(limit))
+      .skip((page - 1) * limit)
+      .exec();
+    
+    const count = await Note.countDocuments({$text: { $search: searchTerms}, user: req.userId});
+
+    res.json({
+      notes,
+      totalPages: Math.ceil(count / limit),
+      currentPage: parseInt(page),
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao buscar as notas', error: error.message });
+  }
+})
+
 module.exports = router;
 >>>>>>> main:api/src/routes/noteRoutes.js

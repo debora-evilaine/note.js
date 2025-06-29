@@ -11,5 +11,5 @@ user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 
 },{timestamps: true });
 
-
-module.exports = mongoose.model('Note', noteSchema);
+noteSchema.index({title: 'text'})
+module.exports = mongoose.model('Note', noteSchema, 'notes');
