@@ -1,3 +1,5 @@
+//const { Console } = require("console");
+
 const API_URL = 'http://localhost:3000';
 
 class NotesApp {
@@ -206,7 +208,7 @@ class NotesApp {
     this.render()
   }
 
-  saveNewTag() {
+  async saveNewTag() {
     const nameInput = document.getElementById("new-tag-name")
     const colorInput = document.getElementById("new-tag-color")
 
@@ -242,11 +244,17 @@ class NotesApp {
   }
 
   async saveNote() {
-    if (!this.selectedNote) return;
 
+    if (!this.selectedNote) return;
     const isUpdating = this.selectedNote.id !== 'new';
     const url = isUpdating ? `${API_URL}/api/notes/${this.selectedNote.id}` : `${API_URL}/api/notes`;
     const method = isUpdating ? 'PUT' : 'POST';
+    this.selectedNote.tagIds = [...this.currentNoteTags]
+    if (this.selectedTag != null) {
+
+    }
+    console.log("TAG SELECIONADA: " + [...this.currentNoteTags])
+
 
     const noteData = {
       title: this.currentTitle || "Nota Sem Título",
