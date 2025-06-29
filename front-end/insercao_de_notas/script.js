@@ -35,6 +35,25 @@ class NotesApp {
       updatedAt: new Date(),
     }
 
+    fetch('http://localhost:5000/api/notes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + this.token
+      },
+      body: JSON.stringify({
+        title: newNote.title,
+        content: newNote.content
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Resposta:', data);
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+      });
+
     this.notes.unshift(newNote)
     this.selectNote(newNote)
     this.isEditing = true
