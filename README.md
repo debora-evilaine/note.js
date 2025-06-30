@@ -15,3 +15,8 @@ Its main objective is to utilize the knowledge acquired in the course to create 
 ## API DOC
 
 [API DOC](api/README.md)
+
+## RUNNIG
+
+If in windows run the run.bat script.
+If in linux run/mac the run.sh script.
