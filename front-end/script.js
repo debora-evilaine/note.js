@@ -3,7 +3,7 @@ const APP_URL = 'http://localhost:8080';
 
 class NotesApp {
   constructor() {
-    this.token = localStorage.getItem('authToken');
+    this.token = sessionStorage.getItem('authToken');
 
     this.authContainer = document.getElementById('auth-container');
     this.appContainer = document.getElementById('app-container');
@@ -75,7 +75,7 @@ class NotesApp {
         throw new Error(data.error || 'Falha no login');
       }
 
-      localStorage.setItem('authToken', data.token);
+      sessionStorage.setItem('authToken', data.token);
       this.token = data.token;
 
       alert('Login bem-sucedido!');
@@ -88,7 +88,7 @@ class NotesApp {
 
   logout() {
     this.token = null;
-    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('authToken');
     this.notes = [];
     this.tags = [];
     this.showAuth();

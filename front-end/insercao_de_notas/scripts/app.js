@@ -7,7 +7,7 @@ import {
 class NotesApp {
     constructor() {
         this.state = state;
-        this.token = localStorage.getItem('authToken');
+        this.token = sessionStorage.getItem('authToken');
         this.init();
     }
 
