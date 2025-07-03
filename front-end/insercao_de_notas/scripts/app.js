@@ -239,7 +239,7 @@ class NotesApp {
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => {
-                localStorage.removeItem('authToken');
+                sessionStorage.removeItem('authToken');
                 window.location.href = '/';
             });
         }
