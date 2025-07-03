@@ -1,4 +1,5 @@
 const API_URL = 'http://localhost:5000';
+const APP_URL = 'http://localhost:8080';
 
 class NotesApp {
   constructor() {
@@ -29,7 +30,7 @@ class NotesApp {
   }
 
   async showApp() {
-    window.location.replace("http://192.168.15.7:8080/insercao_de_notas/app.html")
+    window.location.replace(APP_URL+"/insercao_de_notas/app.html")
   }
 
   async handleRegister(event) {
