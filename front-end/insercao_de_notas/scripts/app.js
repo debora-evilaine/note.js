@@ -235,6 +235,14 @@ class NotesApp {
 
     // --- Event Handling ---
     bindGlobalEventListeners = () => {
+
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('authToken');
+                window.location.href = '/';
+            });
+        }
         const appElement = document.getElementById('app');
 
         appElement.addEventListener('click', (e) => {
@@ -255,9 +263,9 @@ class NotesApp {
                     break;
                 case 'cancel-edit':
                     this.state.isEditing = false;
-                     //find the original state and revert
+                    //find the original state and revert
                     const originalNote = this.state.notes.find(n => n.id === this.state.selectedNote.id);
-                    if(originalNote) this.selectNote(originalNote);
+                    if (originalNote) this.selectNote(originalNote);
                     else this.render();
                     break;
                 case 'select-note':
