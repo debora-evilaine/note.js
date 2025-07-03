@@ -1,3 +1,4 @@
+//import * as ui from './ui.js';
 const API_URL = 'http://localhost:5000';
 
 class NotesApp {
@@ -28,8 +29,24 @@ class NotesApp {
     this.appContainer.style.display = 'none';
   }
 
+  // async showApp() {
+  //   this.authContainer.style.display = 'none';
+  //   this.appContainer.style.display = 'block';
+
+  //   if (!this.appContainer.querySelector('.app-container')) {
+  //     ui.createInitialStructure();
+  //     this.bindGlobalEvents();
+  //   }
+
+  //   await this.fetchInitialData();
+
+  //   this.render();
+  // }
+
+
+
   async showApp() {
-    window.location.replace("http://192.168.15.7:8080/insercao_de_notas/app.html")
+    window.location.replace("localhost:5000/insercao_de_notas/app.html")
   }
 
   async handleRegister(event) {
