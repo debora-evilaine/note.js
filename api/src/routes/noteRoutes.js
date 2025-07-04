@@ -74,7 +74,7 @@ router.get('/by-date', authenticate, async (req, res) => {
     const end = new Date(date);
     end.setDate(end.getDate() + 1);
 
-    const userId = req.userId; // <-- vem do middleware 'authenticate'
+    const userId = req.userId; 
 
     const notes = await Note.find({
       user: userId,
