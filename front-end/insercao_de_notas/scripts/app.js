@@ -11,9 +11,6 @@ class NotesApp {
         this.init();
     }
 
-    /**
-     * Initializes the application.
-     */
     init = () => {
         if (!this.token) {
             alert("Authentication token not found. Please log in.");
@@ -21,13 +18,11 @@ class NotesApp {
             return;
         }
         ui.createInitialStructure();
+        setupTheme();
         this.bindGlobalEventListeners();
         this.fetchInitialData();
     }
 
-    /**
-     * Fetches initial notes and tags from the API.
-     */
     fetchInitialData = async () => {
         try {
             const [notesResponse, tagsResponse] = await Promise.all([
@@ -43,7 +38,6 @@ class NotesApp {
         }
     }
 
-    // --- State & Data Logic ---
     getNotesForCurrentView = () => {
         const notes = this.state.showingAllNotes ?
             this.state.notes :
@@ -74,8 +68,6 @@ class NotesApp {
         return this.state.tags.filter(tag => note.tagIds.includes(tag.id));
     }
 
-    // --- Actions ---
-
     createNewNote = async () => {
         const newNoteData = {
             title: "Nota Sem Título",
@@ -85,12 +77,12 @@ class NotesApp {
 
         try {
             const savedNote = await api.saveNote(newNoteData, this.token);
-
-            this.state.notes.unshift(savedNote);
-
-            this.selectNote(savedNote);
-            this.state.isEditing = true;
-            this.render();
+            if (savedNote) {
+                this.state.notes.unshift(savedNote);
+                this.selectNote(savedNote);
+                this.state.isEditing = true;
+                this.render();
+            }
         } catch (error) {
             console.error("Failed to create new note:", error);
             alert(`Error creating new note: ${error.message}`);
@@ -179,16 +171,17 @@ class NotesApp {
 
         try {
             const savedNote = await api.saveNote(noteToSave, this.token);
-
-            const index = this.state.notes.findIndex(n => n.id === savedNote.id);
-            if (index !== -1) {
-                this.state.notes[index] = savedNote;
-            } else {
-                this.state.notes.unshift(savedNote);
+            if (savedNote) {
+                const index = this.state.notes.findIndex(n => n.id === savedNote.id);
+                if (index !== -1) {
+                    this.state.notes[index] = savedNote;
+                } else {
+                    this.state.notes.unshift(savedNote);
+                }
+                this.state.selectedNote = savedNote;
+                this.state.isEditing = false;
+                this.render();
             }
-            this.state.selectedNote = savedNote;
-            this.state.isEditing = false;
-            this.render();
         } catch (error) {
             console.error("Failed to save note:", error);
             alert(`Error saving note: ${error.message}`);
@@ -233,9 +226,7 @@ class NotesApp {
         }
     }
 
-    // --- Event Handling ---
     bindGlobalEventListeners = () => {
-
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => {
@@ -263,7 +254,6 @@ class NotesApp {
                     break;
                 case 'cancel-edit':
                     this.state.isEditing = false;
-                    //find the original state and revert
                     const originalNote = this.state.notes.find(n => n.id === this.state.selectedNote.id);
                     if (originalNote) this.selectNote(originalNote);
                     else this.render();
@@ -294,7 +284,6 @@ class NotesApp {
             }
         });
 
-        // Listener for note content changes during editing
         appElement.addEventListener('input', (e) => {
             if (e.target.id === 'title-input') {
                 this.state.currentTitle = e.target.value;
@@ -305,7 +294,6 @@ class NotesApp {
             }
         });
 
-        // Listener for tag checkbox changes
         appElement.addEventListener('change', (e) => {
             const checkbox = e.target.closest('.tag-checkbox input[type="checkbox"]');
             if (checkbox) {
@@ -313,7 +301,6 @@ class NotesApp {
             }
         });
 
-        // Specific listeners for static elements
         document.getElementById('create-new-note-btn').addEventListener('click', () => this.createNewNote());
         document.getElementById('create-new-tag-btn').addEventListener('click', () => {
             this.state.showingTagForm = !this.state.showingTagForm;
@@ -326,14 +313,37 @@ class NotesApp {
         });
     }
 
-    /**
-     * Main render function to update the entire UI based on the current state.
-     */
     render = () => {
         ui.updateTagsList(this);
         ui.updateNotesList(this);
         ui.updateMainContent(this);
     }
+}
+
+function setupTheme() {
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    if (!themeToggleBtn) return;
+
+    const currentTheme = localStorage.getItem('theme');
+    const applyTheme = (theme) => {
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggleBtn.textContent = '☀️';
+        } else {
+            document.body.classList.remove('dark-mode');
+            themeToggleBtn.textContent = '🌙';
+        }
+    };
+
+    if (currentTheme) {
+        applyTheme(currentTheme);
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+        let newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+        applyTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+    });
 }
 
 const app = new NotesApp();

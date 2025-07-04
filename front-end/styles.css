@@ -274,6 +274,7 @@ body {
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -925,4 +926,246 @@ body {
   border: none;
   border-top: 1px solid #dddfe2;
   margin: 25px 0;
+}
+:root {
+    --bg-color: #ffffff;
+    --text-color: #222222;
+    --primary-color: #4a90e2; 
+    --secondary-color: #f0f0f0; 
+    --border-color: #dddddd;
+    --hover-color: #e6e6e6;
+    --button-text-color: #ffffff;
+}
+
+body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --primary-color: #4a90e2; 
+    --secondary-color: #1e1e1e;
+    --border-color: #333333;
+    --hover-color: #2a2a2a;
+    --button-text-color: #ffffff;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: var(--button-text-color);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+body.dark-mode {
+    --bg-color: #1a1a1a;
+    --text-color: #e2e8f0;
+    --primary-color: #3b82f6; 
+    --secondary-color: #2d2d2d;
+    --border-color: #4a4a4a;
+    --hover-color: #3a3a3a;
+    --button-text-color: #ffffff;
+
+    --selected-bg: #2563eb;
+    --selected-text: #ffffff;
+    --selected-border: #3b82f6;
+    --selected-shadow: rgba(59, 130, 246, 0.3);
+
+    --highlight-bg: #b45309;
+    --highlight-text: #fefce8;
+}
+
+body.dark-mode .app-container,
+body.dark-mode .sidebar,
+body.dark-mode .main-content,
+body.dark-mode .welcome-screen,
+body.dark-mode .note-header,
+body.dark-mode .note-form,
+body.dark-mode .note-display,
+body.dark-mode .note-content {
+    background-color: var(--bg-color);
+}
+
+body.dark-mode .sidebar {
+    background-color: var(--secondary-color);
+    border-right-color: var(--border-color);
+}
+
+body.dark-mode .sidebar-header,
+body.dark-mode .tags-section,
+body.dark-mode .section-header,
+body.dark-mode .note-header,
+body.dark-mode .note-form,
+body.dark-mode .separator {
+    border-color: var(--border-color);
+}
+
+
+body.dark-mode .app-title,
+body.dark-mode .section-header h3,
+body.dark-mode .tag-name,
+body.dark-mode .note-title,
+body.dark-mode .welcome-screen h2,
+body.dark-mode .display-title,
+body.dark-mode .markdown-preview h1, .note-content h1,
+body.dark-mode .markdown-preview h2, .note-content h2,
+body.dark-mode .markdown-preview h3, .note-content h3,
+body.dark-mode .markdown-preview strong, .note-content strong,
+body.dark-mode .tag-form-header h4,
+body.dark-mode .form-group label {
+    color: var(--text-color);
+}
+
+body.dark-mode .note-preview,
+body.dark-mode .note-info,
+body.dark-mode .welcome-screen p,
+body.dark-mode .tag-count,
+body.dark-mode .no-tags {
+    color: var(--text-color);
+    opacity: 0.7;
+}
+
+body.dark-mode .note-date,
+body.dark-mode .search-icon {
+    color: var(--text-color);
+    opacity: 0.5;
+}
+
+body.dark-mode .search-input,
+body.dark-mode .title-input,
+body.dark-mode .content-editor,
+body.dark-mode .tag-name-input {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .search-input:focus,
+body.dark-mode .title-input:focus,
+body.dark-mode .tag-name-input:focus {
+    background-color: var(--secondary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--selected-shadow);
+}
+
+body.dark-mode .btn-icon:hover {
+    background-color: var(--hover-color);
+    color: var(--text-color);
+}
+
+body.dark-mode .delete-btn:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+body.dark-mode .link-btn {
+    color: var(--primary-color);
+}
+
+body.dark-mode .tag-item:hover {
+    background-color: var(--hover-color);
+}
+
+body.dark-mode .note-item {
+    background-color: var(--secondary-color);
+    box-shadow: none; 
+    border-color: var(--border-color);
+}
+
+body.dark-mode .note-item:hover {
+    background-color: var(--hover-color);
+    border-color: var(--border-color);
+    transform: none; 
+    box-shadow: 0 0 0 1px var(--border-color);
+}
+
+body.dark-mode .note-item.selected,
+body.dark-mode .tag-item.selected {
+    background-color: var(--selected-bg);
+    border-color: var(--selected-border);
+    color: var(--selected-text);
+    box-shadow: 0 0 0 3px var(--selected-shadow);
+    transform: none;
+}
+
+body.dark-mode .tag-item.selected .tag-name,
+body.dark-mode .tag-item.selected {
+    color: var(--selected-text);
+    font-weight: 600;
+}
+body.dark-mode .tag-item.selected .tag-count {
+    background-color: var(--selected-text);
+    color: var(--selected-bg);
+}
+
+body.dark-mode .editor-pane h4,
+body.dark-mode .preview-pane h4,
+body.dark-mode .markdown-preview,
+body.dark-mode .section-header {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .markdown-preview code,
+body.dark-mode .note-content code {
+    background-color: var(--border-color); 
+}
+
+
+body.dark-mode .tag-creation-form {
+    background-color: var(--secondary-color);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .color-input {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+}
+
+
+body.dark-mode ::-webkit-scrollbar-track {
+    background: var(--secondary-color);
+}
+body.dark-mode ::-webkit-scrollbar-thumb {
+    background: #555;
+}
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+body.dark-mode .search-highlight-text {
+    background-color: var(--highlight-bg);
+    color: var(--highlight-text);
+}
+
+.theme-toggle-button {
+    position: fixed; 
+    bottom: 20px;    
+    right: 20px;     
+    z-index: 1000;   
+
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; 
+    font-size: 24px;   
+    border: 1px solid var(--border-color);
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+}
+.theme-toggle-button:hover {
+    transform: scale(1.1); /* Efeito de zoom no hover */
 }

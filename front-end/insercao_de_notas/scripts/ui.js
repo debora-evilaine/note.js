@@ -5,73 +5,78 @@ import {
   highlightSearchTerm
 } from './utils.js';
 
-// Creates the initial HTML structure for the application.
 export const createInitialStructure = () => {
-  const appElement = document.getElementById("app");
-  if (!appElement) return;
+    const appElement = document.getElementById("app");
+    if (!appElement) return;
 
-  appElement.innerHTML = `
-    <div class="app-container">
-      <div class="sidebar">
-        <div class="sidebar-header">
-          <div class="header-top">
-            <h1 class="app-title">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14,2 14,8 20,8"></polyline>
-              </svg>
-              Notas
-            </h1>
-            <div class="header-buttons">
-            <button id="create-new-note-btn" class="btn btn-primary">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              Nova
-            </button>
-            <button id="logout-btn" class="btn btn-secondary">
-              Logout
-    </button>
-  </div>
-          </div>
-          <div class="search-container">
-            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.35-4.35"></path>
-            </svg>
-            <input 
-              type="text" 
-              class="search-input" 
-              placeholder="Buscar notas e tags..."
-              id="search-input"
-            />
-          </div>
-        </div>
-
-        <div class="tags-section">
-          <div class="section-header">
-            <h3>Tags</h3>
-            <button id="create-new-tag-btn" class="btn-icon" title="Criar nova tag">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-            </button>
-          </div>
-          <div class="tags-list" id="tags-list"></div>
-        </div>
-        
-        <div class="notes-section">
-          <div class="section-header">
-            <h3 id="notes-section-title">Todas as Notas</h3>
-          </div>
-          <div class="notes-list" id="notes-list"></div>
-        </div>
-      </div>
-      <div class="main-content" id="main-content"></div>
+    appElement.innerHTML = `
+      <div class="app-container">
+        <div class="sidebar">
+          <div class="sidebar-header">
+            <div class="header-top">
+              <h1 class="app-title">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14,2 14,8 20,8"></polyline>
+                </svg>
+                Notas
+              </h1>
+              <div class="header-buttons">
+              <button id="create-new-note-btn" class="btn btn-primary">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Nova
+              </button>
+              <button id="logout-btn" class="btn btn-secondary">
+                Logout
+      </button>
     </div>
-  `;
+            </div>
+            <div class="search-container">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input 
+                type="text" 
+                class="search-input" 
+                placeholder="Buscar notas e tags..."
+                id="search-input"
+              />
+            </div>
+          </div>
+  
+          <div class="tags-section">
+            <div class="section-header">
+              <h3>Tags</h3>
+              <button id="create-new-tag-btn" class="btn-icon" title="Criar nova tag">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </div>
+            <div class="tags-list" id="tags-list"></div>
+          </div>
+          
+          <div class="notes-section">
+            <div class="section-header">
+              <h3 id="notes-section-title">Todas as Notas</h3>
+            </div>
+            <div class="notes-list" id="notes-list"></div>
+          </div>
+        </div>
+        <div class="main-content" id="main-content"></div>
+      </div>
+    `;
+
+    const themeBtn = document.createElement('button');
+    themeBtn.id = 'theme-toggle';
+    themeBtn.className = 'theme-toggle-button';
+    themeBtn.textContent = '🌙';
+    document.body.appendChild(themeBtn);
 };
 
 /**
