@@ -61,4 +61,36 @@ router.delete('/:id', authenticate, async (req, res) => {
   }
 });
 
+// pesquisa por data 
+router.get('/by-date', authenticate, async (req, res) => {
+  try {
+    const { date } = req.query;
+
+    if (!date) {
+      return res.status(400).json({ error: 'A data é obrigatória (formato: YYYY-MM-DD)' });
+    }
+
+    const start = new Date(date);
+    const end = new Date(date);
+    end.setDate(end.getDate() + 1);
+
+    const userId = req.userId; // <-- vem do middleware 'authenticate'
+
+    const notes = await Note.find({
+      user: userId,
+      createdAt: {
+        $gte: start,
+        $lt: end
+      }
+    }).sort({ createdAt: -1 });
+
+    res.json(notes);
+  } catch (err) {
+    console.error('Erro ao buscar notas por data:', err);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
+
 module.exports = router;
