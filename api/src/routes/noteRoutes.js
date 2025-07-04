@@ -78,7 +78,7 @@ router.get('/by-date', authenticate, async (req, res) => {
 
     const notes = await Note.find({
       user: userId,
-      createdAt: {
+      updatedAt: {
         $gte: start,
         $lt: end
       }
