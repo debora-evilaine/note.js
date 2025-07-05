@@ -1167,5 +1167,31 @@ body.dark-mode .search-highlight-text {
     transition: background-color 0.3s, color 0.3s, transform 0.2s;
 }
 .theme-toggle-button:hover {
-    transform: scale(1.1); /* Efeito de zoom no hover */
+    transform: scale(1.1); 
+}
+
+.forgot-password-link {
+  display: block;      
+  text-align: right;   
+  margin-top: 12px;    
+  
+  font-size: 0.875rem; 
+  color: #6b7280;    
+  text-decoration: none; 
+  transition: color 0.2s;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline; 
+  color: #1f2937; 
+}
+
+body.dark-mode .forgot-password-link {
+    color: var(--text-color);
+    opacity: 0.7;
+}
+
+body.dark-mode .forgot-password-link:hover {
+    color: var(--primary-color);
+    opacity: 1;
 }
