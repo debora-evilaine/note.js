@@ -8,6 +8,7 @@ class NotesApp {
     constructor() {
         this.state = state;
         this.token = sessionStorage.getItem('authToken');
+        this.userName = sessionStorage.getItem('userName');
         this.init();
     }
 

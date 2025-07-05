@@ -1,8 +1,8 @@
 import {
-  escapeHtml,
-  getPreviewText,
-  renderMarkdown,
-  highlightSearchTerm
+    escapeHtml,
+    getPreviewText,
+    renderMarkdown,
+    highlightSearchTerm
 } from './utils.js';
 
 export const createInitialStructure = () => {
@@ -79,22 +79,14 @@ export const createInitialStructure = () => {
     document.body.appendChild(themeBtn);
 };
 
-/**
- * Updates the list of tags in the sidebar.
- * @param {object} app - The main application instance.
- */
 export const updateTagsList = (app) => {
-  const tagsList = document.getElementById("tags-list");
-  if (!tagsList) return;
+    const tagsList = document.getElementById("tags-list");
+    if (!tagsList) return;
 
-  const {
-    state,
-    getFilteredTags
-  } = app;
+    const { state, getFilteredTags } = app;
+    const filteredTags = getFilteredTags();
 
-  const filteredTags = getFilteredTags();
-
-  const allNotesItem = `
+    const allNotesItem = `
         <div class="tag-item ${state.showingAllNotes ? "selected" : ""}" data-action="show-all-notes">
           <div class="tag-color" style="background-color: #6b7280;"></div>
           <span class="tag-name">Todas as Notas</span>
@@ -102,8 +94,8 @@ export const updateTagsList = (app) => {
         </div>
     `;
 
-  const tagCreationForm = state.showingTagForm ?
-    `
+    const tagCreationForm = state.showingTagForm ?
+        `
         <div class="tag-creation-form">
           <div class="tag-form-header">
             <h4>Criar Nova Tag</h4>
@@ -132,13 +124,13 @@ export const updateTagsList = (app) => {
           </div>
         </div>
       ` :
-    "";
+        "";
 
-  const tagItems = filteredTags.map((tag) => {
-    const noteCount = state.notes.filter((note) => note.tagIds.includes(tag.id)).length;
-    const isHighlighted = state.searchTerm && tag.name.toLowerCase().includes(state.searchTerm.toLowerCase());
+    const tagItems = filteredTags.map((tag) => {
+        const noteCount = state.notes.filter((note) => note.tagIds.includes(tag.id)).length;
+        const isHighlighted = state.searchTerm && tag.name.toLowerCase().includes(state.searchTerm.toLowerCase());
 
-    return `
+        return `
             <div class="tag-item ${state.selectedTag?.id === tag.id ? "selected" : ""} ${isHighlighted ? "search-highlight" : ""}" data-action="select-tag" data-tag-id="${tag.id}">
               <div class="tag-color" style="background-color: ${tag.color};"></div>
               <span class="tag-name">${highlightSearchTerm(escapeHtml(tag.name), state.searchTerm)}</span>
@@ -151,52 +143,45 @@ export const updateTagsList = (app) => {
               </button>
             </div>
         `;
-  }).join("");
+    }).join("");
 
-  const noTagsMessage = state.searchTerm && filteredTags.length === 0 ?
-    `<div class="empty-state"><p>Nenhuma tag corresponde a "${escapeHtml(state.searchTerm)}"</p></div>` :
-    "";
+    const noTagsMessage = state.searchTerm && filteredTags.length === 0 ?
+        `<div class="empty-state"><p>Nenhuma tag corresponde a "${escapeHtml(state.searchTerm)}"</p></div>` :
+        "";
 
-  tagsList.innerHTML = allNotesItem + tagCreationForm + tagItems + noTagsMessage;
+    tagsList.innerHTML = allNotesItem + tagCreationForm + tagItems + noTagsMessage;
 };
 
-
-/**
- * Updates the list of notes in the sidebar.
- * @param {object} app - The main application instance.
- */
 export const updateNotesList = (app) => {
-  const notesList = document.getElementById("notes-list");
-  const notesTitle = document.getElementById("notes-section-title");
-  if (!notesList || !notesTitle) return;
+    const notesList = document.getElementById("notes-list");
+    const notesTitle = document.getElementById("notes-section-title");
+    if (!notesList || !notesTitle) return;
 
-  const {
-    state,
-    getNotesForCurrentView,
-    getTagsForNote
-  } = app;
-  const filteredNotes = getNotesForCurrentView();
+    const { state, getNotesForCurrentView, getTagsForNote } = app;
+    const filteredNotes = getNotesForCurrentView();
 
-  if (state.showingAllNotes) {
-    notesTitle.textContent = `Todas as Notas (${filteredNotes.length})`;
-  } else {
-    notesTitle.textContent = `${state.selectedTag.name} (${filteredNotes.length})`;
-  }
+    if (state.showingAllNotes) {
+        notesTitle.textContent = `Todas as Notas (${filteredNotes.length})`;
+    } else if (state.selectedTag) {
+        notesTitle.textContent = `${state.selectedTag.name} (${filteredNotes.length})`;
+    }
 
-  if (filteredNotes.length === 0) {
-    // ... (empty state HTML)
-  } else {
-    notesList.innerHTML = filteredNotes.map((note) => {
-      const noteTags = getTagsForNote(note.id);
-      return `
+    if (filteredNotes.length === 0 && !state.showingAllNotes) {
+        notesList.innerHTML = `<div class="empty-state"><p>Nenhuma nota encontrada para esta tag.</p></div>`;
+    } else if (filteredNotes.length === 0 && state.showingAllNotes) {
+        notesList.innerHTML = `<div class="empty-state"><p>Você ainda não tem notas. Crie uma!</p></div>`;
+    } else {
+        notesList.innerHTML = filteredNotes.map((note) => {
+            const noteTags = getTagsForNote(note.id);
+            return `
                 <div class="note-item ${state.selectedNote?.id === note.id ? "selected" : ""}" data-action="select-note" data-note-id="${note.id}">
                   <div class="note-item-content">
                     <h3 class="note-title">${highlightSearchTerm(escapeHtml(note.title), state.searchTerm)}</h3>
                     <p class="note-preview">${highlightSearchTerm(getPreviewText(note.content), state.searchTerm)}</p>
                     <div class="note-tags">
                       ${noteTags.slice(0, 3).map(tag =>
-        `<span class="tag" style="background-color: ${tag.color}20; color: ${tag.color}; border-color: ${tag.color}40;">${escapeHtml(tag.name)}</span>`
-      ).join("")}
+                `<span class="tag" style="background-color: ${tag.color}20; color: ${tag.color}; border-color: ${tag.color}40;">${escapeHtml(tag.name)}</span>`
+            ).join("")}
                     </div>
                     <div class="note-date">${new Date(note.updatedAt).toLocaleDateString()}</div>
                   </div>
@@ -208,31 +193,27 @@ export const updateNotesList = (app) => {
                   </button>
                 </div>
             `;
-    }).join("");
-  }
+        }).join("");
+    }
 };
 
-/**
- * Updates the main content area with the selected note or welcome screen.
- * @param {object} app - The main application instance.
- */
 export const updateMainContent = (app) => {
-  const mainContent = document.getElementById("main-content");
-  if (!mainContent) return;
+    const mainContent = document.getElementById("main-content");
+    if (!mainContent) return;
 
-  const {
-    state,
-    getTagsForNote
-  } = app;
+    const { state, getTagsForNote } = app;
 
-  if (state.selectedNote) {
-    const noteTags = getTagsForNote(state.selectedNote.id);
-    const isEditing = state.isEditing;
+    const userName = app.userName || 'Usuário';
 
-    mainContent.innerHTML = `
+    if (state.selectedNote) {
+        const noteTags = getTagsForNote(state.selectedNote.id);
+        const isEditing = state.isEditing;
+
+
+        mainContent.innerHTML = `
             <div class="note-header">
                 <div class="note-info">
-                    <!-- Note info -->
+                    <span>Última atualização: ${new Date(state.selectedNote.updatedAt).toLocaleString()}</span>
                 </div>
                 <div class="note-actions">
                     ${isEditing ? `
@@ -243,19 +224,18 @@ export const updateMainContent = (app) => {
                     `}
                 </div>
             </div>
-
             ${isEditing ? `
                 <div class="note-form">
                     <input type="text" class="title-input" id="title-input" value="${escapeHtml(state.currentTitle)}" />
                     <div class="tags-selector">
                         <h4>Tags:</h4>
                         <div class="tags-checkboxes" id="tags-checkboxes">
-                            ${state.tags.map(tag => `
+                            ${state.tags.length > 0 ? state.tags.map(tag => `
                                 <label class="tag-checkbox">
                                     <input type="checkbox" data-tag-id="${tag.id}" ${state.currentNoteTags.includes(tag.id) ? "checked" : ""}/>
-                                    <span class="tag-checkbox-label" style="background-color: ${tag.color}20; ...">${escapeHtml(tag.name)}</span>
+                                    <span class="tag-checkbox-label" style="background-color: ${tag.color}20; border-color: ${tag.color}40; color: ${tag.color};">${escapeHtml(tag.name)}</span>
                                 </label>
-                            `).join('')}
+                            `).join('') : '<p class="no-tags">Nenhuma tag criada.</p>'}
                         </div>
                     </div>
                 </div>
@@ -266,42 +246,37 @@ export const updateMainContent = (app) => {
             ` : `
                 <div class="note-display">
                     <h1 class="display-title">${escapeHtml(state.selectedNote.title)}</h1>
-                    <!-- Display tags -->
+                    <div class="display-tags">
+                        ${noteTags.map(tag => `<span class="tag-large" style="background-color: ${tag.color}20; color: ${tag.color}; border-color: ${tag.color}40;">${escapeHtml(tag.name)}</span>`).join('')}
+                    </div>
                 </div>
                 <div class="note-content">
                     ${renderMarkdown(state.selectedNote.content)}
                 </div>
             `}
         `;
-  } else {
-    mainContent.innerHTML = `
+    } else {
+        mainContent.innerHTML = `
             <div class="welcome-screen">
-                <h2>Bem-vindo</h2>
+                <h2>Bem-vindo(a), ${userName}!</h2>
                 <p>Selecione uma nota para visualizar ou crie uma nova.</p>
             </div>
         `;
-  }
-};
-
-/**
- * Updates the markdown preview pane.
- * @param {string} content - The markdown content to render.
- */
-export const updatePreview = (content) => {
-  const preview = document.getElementById("markdown-preview");
-  if (preview) {
-    preview.innerHTML = renderMarkdown(content);
-  }
-};
-
-/**
- * Focuses the new tag name input field when the form is shown.
- */
-export const focusNewTagInput = () => {
-  setTimeout(() => {
-    const nameInput = document.getElementById("new-tag-name");
-    if (nameInput) {
-      nameInput.focus();
     }
-  }, 100);
+};
+
+export const updatePreview = (content) => {
+    const preview = document.getElementById("markdown-preview");
+    if (preview) {
+        preview.innerHTML = renderMarkdown(content);
+    }
+};
+
+export const focusNewTagInput = () => {
+    setTimeout(() => {
+        const nameInput = document.getElementById("new-tag-name");
+        if (nameInput) {
+            nameInput.focus();
+        }
+    }, 100);
 };

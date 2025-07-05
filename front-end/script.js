@@ -47,7 +47,7 @@ class NotesApp {
 
 
   async showApp() {
-    window.location.replace(APP_URL + "/insercao_de_notas/app.html")
+  window.location.replace(APP_URL + "/insercao_de_notas/app.html")
   }
 
   async handleRegister(event) {
@@ -93,7 +93,9 @@ class NotesApp {
       }
 
       sessionStorage.setItem('authToken', data.token);
+      sessionStorage.setItem('userName', data.user.name);
       this.token = data.token;
+      this.showApp();
 
       alert('Login bem-sucedido!');
       this.showApp();
