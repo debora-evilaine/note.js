@@ -1,3 +1,4 @@
+// app.js
 import * as ui from './ui.js';
 import * as api from './api.js';
 import {
@@ -14,7 +15,7 @@ class NotesApp {
 
     init = () => {
         if (!this.token) {
-            alert("Authentication token not found. Please log in.");
+            alert("Token de autenticação não encontrado. Por favor, faça login.");
             window.location.href = '/';
             return;
         }
@@ -34,8 +35,8 @@ class NotesApp {
             this.state.tags = tagsResponse.tags || tagsResponse;
             this.render();
         } catch (error) {
-            console.error("Failed to fetch initial data:", error);
-            alert(`Error fetching data: ${error.message}`);
+            console.error("Falha ao buscar dados iniciais:", error);
+            alert(`Erro ao buscar dados: ${error.message}`);
         }
     }
 
@@ -85,8 +86,8 @@ class NotesApp {
                 this.render();
             }
         } catch (error) {
-            console.error("Failed to create new note:", error);
-            alert(`Error creating new note: ${error.message}`);
+            console.error("Falha ao criar nova nota:", error);
+            alert(`Erro ao criar nova nota: ${error.message}`);
         }
     }
 
@@ -94,7 +95,7 @@ class NotesApp {
         const nameInput = document.getElementById("new-tag-name");
         const colorInput = document.getElementById("new-tag-color");
         if (!nameInput || !nameInput.value.trim()) {
-            alert("Tag name cannot be empty.");
+            alert("O nome da tag não pode estar vazio.");
             return;
         }
 
@@ -109,8 +110,8 @@ class NotesApp {
             this.state.showingTagForm = false;
             this.render();
         } catch (error) {
-            console.error("Failed to save tag:", error);
-            alert(`Error saving tag: ${error.message}`);
+            console.error("Falha ao salvar tag:", error);
+            alert(`Erro ao salvar tag: ${error.message}`);
         }
     }
 
@@ -132,6 +133,8 @@ class NotesApp {
     }
 
     selectNote = (noteToSelect) => {
+        this.state.isSelectionMode = false;
+        this.state.selectedNoteIds = [];
         this.state.selectedNote = noteToSelect;
         this.state.currentTitle = noteToSelect.title;
         this.state.currentNoteTags = [...(noteToSelect.tagIds || [])];
@@ -141,6 +144,8 @@ class NotesApp {
     }
 
     selectTag = (tagToSelect) => {
+        this.state.isSelectionMode = false;
+        this.state.selectedNoteIds = [];
         this.state.selectedTag = tagToSelect;
         this.state.showingAllNotes = false;
         this.state.selectedNote = null;
@@ -149,6 +154,8 @@ class NotesApp {
     }
 
     showAllNotes = () => {
+        this.state.isSelectionMode = false;
+        this.state.selectedNoteIds = [];
         this.state.selectedTag = null;
         this.state.showingAllNotes = true;
         this.state.selectedNote = null;
@@ -158,8 +165,8 @@ class NotesApp {
 
     saveNote = async () => {
         if (!this.state.selectedNote || !this.state.selectedNote.id) {
-            console.error("saveNote called on a note without an ID.", this.state.selectedNote);
-            alert("Cannot save note without a valid ID.");
+            console.error("saveNote chamado em uma nota sem ID.", this.state.selectedNote);
+            alert("Não é possível salvar a nota sem um ID válido.");
             return;
         }
 
@@ -184,28 +191,29 @@ class NotesApp {
                 this.render();
             }
         } catch (error) {
-            console.error("Failed to save note:", error);
-            alert(`Error saving note: ${error.message}`);
+            console.error("Falha ao salvar nota:", error);
+            alert(`Erro ao salvar nota: ${error.message}`);
         }
     }
 
     deleteNote = async (noteId) => {
-        if (!confirm("Are you sure you want to delete this note?")) return;
+        if (!confirm("Tem certeza de que deseja deletar esta nota?")) return;
         try {
             await api.deleteNote(noteId, this.token);
             this.state.notes = this.state.notes.filter(n => n.id !== noteId);
             if (this.state.selectedNote && this.state.selectedNote.id === noteId) {
                 this.state.selectedNote = null;
             }
+            this.state.selectedNoteIds = this.state.selectedNoteIds.filter(id => id !== noteId);
             this.render();
         } catch (error) {
-            console.error("Failed to delete note:", error);
-            alert(`Error deleting note: ${error.message}`);
+            console.error("Falha ao deletar nota:", error);
+            alert(`Erro ao deletar nota: ${error.message}`);
         }
     }
 
     deleteTag = async (tagId) => {
-        if (!confirm("Are you sure you want to delete this tag? This will remove the tag from all notes.")) return;
+        if (!confirm("Tem certeza de que deseja deletar esta tag? Isso removerá a tag de todas as notas.")) return;
         try {
             await api.deleteTag(tagId, this.token);
             this.state.tags = this.state.tags.filter(t => t.id !== tagId);
@@ -222,8 +230,44 @@ class NotesApp {
                 this.render();
             }
         } catch (error) {
-            console.error("Failed to delete tag:", error);
-            alert(`Error deleting tag: ${error.message}`);
+            console.error("Falha ao deletar tag:", error);
+            alert(`Erro ao deletar tag: ${error.message}`);
+        }
+    }
+
+    toggleSelectionMode = () => {
+        this.state.isSelectionMode = !this.state.isSelectionMode;
+        if (!this.state.isSelectionMode) {
+            this.state.selectedNoteIds = [];
+        }
+        this.state.selectedNote = null;
+        this.state.isEditing = false;
+        this.render();
+    }
+
+    toggleNoteSelection = (noteId) => {
+        const index = this.state.selectedNoteIds.indexOf(noteId);
+        if (index > -1) {
+            this.state.selectedNoteIds.splice(index, 1);
+        } else {
+            this.state.selectedNoteIds.push(noteId);
+        }
+        this.render();
+    }
+
+    downloadSelectedNotes = async () => {
+        if (this.state.selectedNoteIds.length === 0) {
+            alert("Nenhuma nota selecionada para baixar.");
+            return;
+        }
+
+        try {
+            await api.downloadNotes(this.state.selectedNoteIds, this.token);
+            alert("PDF gerado e download iniciado!");
+            this.toggleSelectionMode();
+        } catch (error) {
+            console.error("Erro ao baixar notas:", error);
+            alert(`Erro ao baixar notas: ${error.message}`);
         }
     }
 
@@ -239,51 +283,70 @@ class NotesApp {
 
         appElement.addEventListener('click', (e) => {
             const actionTarget = e.target.closest('[data-action]');
-            if (!actionTarget) return;
+            if (actionTarget) {
+                const action = actionTarget.dataset.action;
+                const noteId = actionTarget.dataset.noteId;
+                const tagId = actionTarget.dataset.tagId;
 
-            const action = actionTarget.dataset.action;
-            const noteId = actionTarget.dataset.noteId;
-            const tagId = actionTarget.dataset.tagId;
+                switch (action) {
+                    case 'save-note':
+                        this.saveNote();
+                        break;
+                    case 'edit-note':
+                        this.state.isEditing = true;
+                        this.render();
+                        break;
+                    case 'cancel-edit':
+                        this.state.isEditing = false;
+                        const originalNote = this.state.notes.find(n => n.id === this.state.selectedNote.id);
+                        if (originalNote) this.selectNote(originalNote);
+                        else this.render();
+                        break;
+                    case 'select-note':
+                        if (this.state.isSelectionMode) {
+                            this.toggleNoteSelection(noteId);
+                        } else {
+                            const note = this.state.notes.find(n => n.id === noteId);
+                            if (note) this.selectNote(note);
+                        }
+                        break;
+                    case 'delete-note':
+                        this.deleteNote(noteId);
+                        break;
+                    case 'select-tag':
+                        const tag = this.state.tags.find(t => t.id === tagId);
+                        if (tag) this.selectTag(tag);
+                        break;
+                    case 'delete-tag':
+                        this.deleteTag(tagId);
+                        break;
+                    case 'show-all-notes':
+                        this.showAllNotes();
+                        break;
+                    case 'save-new-tag':
+                        this.saveNewTag();
+                        break;
+                    case 'cancel-new-tag':
+                        this.cancelNewTag();
+                        break;
+                }
+            }
 
-            switch (action) {
-                case 'save-note':
-                    this.saveNote();
-                    break;
-                case 'edit-note':
-                    this.state.isEditing = true;
-                    this.render();
-                    break;
-                case 'cancel-edit':
-                    this.state.isEditing = false;
-                    const originalNote = this.state.notes.find(n => n.id === this.state.selectedNote.id);
-                    if (originalNote) this.selectNote(originalNote);
-                    else this.render();
-                    break;
-                case 'select-note':
-                    const note = this.state.notes.find(n => n.id === noteId);
-                    if (note) this.selectNote(note);
-                    break;
-                case 'delete-note':
-                    this.deleteNote(noteId);
-                    break;
-                case 'select-tag':
-                    const tag = this.state.tags.find(t => t.id === tagId);
-                    if (tag) this.selectTag(tag);
-                    break;
-                case 'delete-tag':
-                    this.deleteTag(tagId);
-                    break;
-                case 'show-all-notes':
-                    this.showAllNotes();
-                    break;
-                case 'save-new-tag':
-                    this.saveNewTag();
-                    break;
-                case 'cancel-new-tag':
-                    this.cancelNewTag();
-                    break;
+            if (e.target.classList.contains('note-select-checkbox')) {
+                const noteId = e.target.dataset.noteId;
+                this.toggleNoteSelection(noteId);
             }
         });
+
+        const toggleSelectionModeBtn = document.getElementById('toggle-selection-mode-btn');
+        if (toggleSelectionModeBtn) {
+            toggleSelectionModeBtn.addEventListener('click', () => this.toggleSelectionMode());
+        }
+
+        const downloadSelectedNotesBtn = document.getElementById('download-selected-notes-btn');
+        if (downloadSelectedNotesBtn) {
+            downloadSelectedNotesBtn.addEventListener('click', () => this.downloadSelectedNotes());
+        }
 
         appElement.addEventListener('input', (e) => {
             if (e.target.id === 'title-input') {
@@ -318,6 +381,7 @@ class NotesApp {
         ui.updateTagsList(this);
         ui.updateNotesList(this);
         ui.updateMainContent(this);
+        ui.updateDownloadButtonState(this);
     }
 }
 

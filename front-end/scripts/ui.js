@@ -1,3 +1,4 @@
+// ui.js
 import {
     escapeHtml,
     getPreviewText,
@@ -22,17 +23,17 @@ export const createInitialStructure = () => {
                 Notas
               </h1>
               <div class="header-buttons">
-              <button id="create-new-note-btn" class="btn btn-primary">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Nova
-              </button>
-              <button id="logout-btn" class="btn btn-secondary">
-                Logout
-      </button>
-    </div>
+                <button id="create-new-note-btn" class="btn btn-primary">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  Nova
+                </button>
+                <button id="logout-btn" class="btn btn-secondary">
+                  Logout
+                </button>
+              </div>
             </div>
             <div class="search-container">
               <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -47,7 +48,7 @@ export const createInitialStructure = () => {
               />
             </div>
           </div>
-  
+    
           <div class="tags-section">
             <div class="section-header">
               <h3>Tags</h3>
@@ -64,6 +65,22 @@ export const createInitialStructure = () => {
           <div class="notes-section">
             <div class="section-header">
               <h3 id="notes-section-title">Todas as Notas</h3>
+              <div class="notes-actions">
+                <button id="toggle-selection-mode-btn" class="btn-icon" title="Selecionar notas">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 11l3 3 8-8"></path>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                  </svg>
+                </button>
+                <button id="download-selected-notes-btn" class="btn-icon" title="Baixar notas selecionadas como PDF" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="12" y1="17" x2="12" y2="11"></line>
+                        <polyline points="9 14 12 11 15 14"></polyline>
+                    </svg>
+                </button>
+              </div>
             </div>
             <div class="notes-list" id="notes-list"></div>
           </div>
@@ -173,12 +190,19 @@ export const updateNotesList = (app) => {
     } else {
         notesList.innerHTML = filteredNotes.map((note) => {
             const noteTags = getTagsForNote(note.id);
+            const isSelected = state.selectedNoteIds.includes(note.id);
+            const checkboxHtml = state.isSelectionMode ?
+                `<input type="checkbox" class="note-select-checkbox" data-note-id="${note.id}" ${isSelected ? 'checked' : ''}>` :
+                '';
+
             return `
                 <div class="note-item ${state.selectedNote?.id === note.id ? "selected" : ""}" data-action="select-note" data-note-id="${note.id}">
                   <div class="note-item-content">
+                    ${checkboxHtml}
                     <h3 class="note-title">${highlightSearchTerm(escapeHtml(note.title), state.searchTerm)}</h3>
                     <p class="note-preview">${highlightSearchTerm(getPreviewText(note.content), state.searchTerm)}</p>
                     <div class="note-tags">
+
                       ${noteTags.slice(0, 3).map(tag =>
                 `<span class="tag" style="background-color: ${tag.color}20; color: ${tag.color}; border-color: ${tag.color}40;">${escapeHtml(tag.name)}</span>`
             ).join("")}
@@ -195,6 +219,7 @@ export const updateNotesList = (app) => {
             `;
         }).join("");
     }
+    updateDownloadButtonState(app);
 };
 
 export const updateMainContent = (app) => {
@@ -205,10 +230,9 @@ export const updateMainContent = (app) => {
 
     const userName = app.userName || 'Usuário';
 
-    if (state.selectedNote) {
+    if (state.selectedNote && !state.isSelectionMode) {
         const noteTags = getTagsForNote(state.selectedNote.id);
         const isEditing = state.isEditing;
-
 
         mainContent.innerHTML = `
             <div class="note-header">
@@ -255,11 +279,18 @@ export const updateMainContent = (app) => {
                 </div>
             `}
         `;
-    } else {
+    } else if (!state.isSelectionMode) {
         mainContent.innerHTML = `
             <div class="welcome-screen">
                 <h2>Bem-vindo(a), ${userName}!</h2>
                 <p>Selecione uma nota para visualizar ou crie uma nova.</p>
+            </div>
+        `;
+    } else {
+        mainContent.innerHTML = `
+            <div class="welcome-screen">
+                <h2>Modo de Seleção Ativo</h2>
+                <p>Selecione as notas na lista à esquerda para baixá-las como PDF.</p>
             </div>
         `;
     }
@@ -279,4 +310,29 @@ export const focusNewTagInput = () => {
             nameInput.focus();
         }
     }, 100);
+};
+
+export const updateDownloadButtonState = (app) => {
+    const downloadBtn = document.getElementById('download-selected-notes-btn');
+    const toggleSelectionBtn = document.getElementById('toggle-selection-mode-btn');
+
+    if (downloadBtn && toggleSelectionBtn) {
+        if (app.state.isSelectionMode) {
+            downloadBtn.style.display = app.state.selectedNoteIds.length > 0 ? 'block' : 'none';
+            toggleSelectionBtn.querySelector('svg').innerHTML = `
+                <polyline points="20 6 9 17 4 12"></polyline>
+                <line x1="20" y1="6" x2="9" y2="17"></line>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            `;
+            toggleSelectionBtn.title = "Sair do modo de seleção";
+
+        } else {
+            downloadBtn.style.display = 'none';
+            toggleSelectionBtn.querySelector('svg').innerHTML = `
+                <path d="M9 11l3 3 8-8"></path>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            `;
+            toggleSelectionBtn.title = "Selecionar notas";
+        }
+    }
 };

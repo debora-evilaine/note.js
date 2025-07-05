@@ -7,6 +7,13 @@ export const state = {
     searchTerm: "",
     showingAllNotes: true,
     showingTagForm: false,
+
+    currentTitle: "",
+    currentContent: "",
+    currentNoteTags: [],
+
+    isSelectionMode: false,
+    selectedNoteIds: [],
 };
 
 export const addNote = (note) => {
