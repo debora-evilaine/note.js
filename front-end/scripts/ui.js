@@ -1,4 +1,3 @@
-// ui.js
 import {
     escapeHtml,
     getPreviewText,
@@ -31,7 +30,11 @@ export const createInitialStructure = () => {
                   Nova
                 </button>
                 <button id="logout-btn" class="btn btn-secondary">
+                  <svg class="icon" fill="none" stroke="currentColor" stroke-width="2">
+                    
+                  </svg>
                   Logout
+
                 </button>
               </div>
             </div>
