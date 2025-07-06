@@ -4,7 +4,7 @@ const noteSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  tagIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }] // This allows storing multiple tag IDs
+  tagIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }]
 }, {
   timestamps: true,
   toJSON: {

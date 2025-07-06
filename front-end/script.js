@@ -47,7 +47,7 @@ class NotesApp {
 
 
   async showApp() {
-  window.location.replace(APP_URL + "/insercao_de_notas/app.html")
+  window.location.replace(APP_URL + "/app/html/app.html")
   }
 
   async handleRegister(event) {
