@@ -22,7 +22,7 @@ const validatePassword = (password) => {
 };
 
 
-// Registrar usuário
+
 router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -74,7 +74,7 @@ router.post('/register', async (req, res) => {
 });
 
 
-// Login do usuário
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -133,7 +133,7 @@ router.post('/forgot-password', async (req, res) => {
             return res.status(200).json({ message: 'Se um usuário com este e-mail existir, um link de redefinição foi enviado.' });
         }
         const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '15m' });
-        const resetLink = `${process.env.FRONTEND_URL}/note.js/front-end/insercao_de_notas/reset-password.html?token=${resetToken}`;
+        const resetLink = `${process.env.FRONTEND_URL}/login/html/reset-password.html?token=${resetToken}`;
 
 
         await transporter.sendMail({

@@ -40,27 +40,48 @@ class NotesApp {
     }
 
     getNotesForCurrentView = () => {
-        const notes = this.state.showingAllNotes ?
+        let notes = this.state.showingAllNotes ?
             this.state.notes :
             this.state.notes.filter(note => note.tagIds.includes(this.state.selectedTag.id));
+       
 
-        if (!this.state.searchTerm) return notes;
+        if (this.state.searchTerm) {
+            const term = this.state.searchTerm.toLowerCase();
+            notes = notes.filter(note => {
+                const titleMatch = note.title.toLowerCase().includes(term);
+                const contentMatch = note.content.toLowerCase().includes(term);
+                const noteTags = this.getTagsForNote(note.id);
+                const tagMatch = noteTags.some(tag => tag.name.toLowerCase().includes(term));
+                return titleMatch || contentMatch || tagMatch;
+            });
+        }
 
-        const term = this.state.searchTerm.toLowerCase();
+        if (this.state.startDateFilter || this.state.endDateFilter) {
+            notes = notes.filter(note => {
+                const noteDate = new Date(note.updatedAt);
+                const start = this.state.startDateFilter ? new Date(this.state.startDateFilter) : null;
+                const end = this.state.endDateFilter ? new Date(this.state.endDateFilter) : null;
 
-        return notes.filter(note => {
-            const titleMatch = note.title.toLowerCase().includes(term);
-            const contentMatch = note.content.toLowerCase().includes(term);
-            const noteTags = this.getTagsForNote(note.id);
-            const tagMatch = noteTags.some(tag => tag.name.toLowerCase().includes(term));
-            return titleMatch || contentMatch || tagMatch;
-        });
+                if (start && end) 
+                    return noteDate >= start && noteDate <= end;
+                
+                return true;
+            });
+        }
+
+        return notes;
     }
 
     getFilteredTags = () => {
         if (!this.state.searchTerm) return this.state.tags;
         const term = this.state.searchTerm.toLowerCase();
         return this.state.tags.filter(tag => tag.name.toLowerCase().includes(term));
+    }
+
+    handleDateFilterChange = (startMoment, endMoment) => {
+        this.state.startDateFilter = startMoment ? startMoment : null;
+        this.state.endDateFilter = endMoment ? endMoment : null;
+        this.render();
     }
 
     getTagsForNote = (noteId) => {
@@ -366,15 +387,55 @@ class NotesApp {
         });
 
         document.getElementById('create-new-note-btn').addEventListener('click', () => this.createNewNote());
+        
         document.getElementById('create-new-tag-btn').addEventListener('click', () => {
             this.state.showingTagForm = !this.state.showingTagForm;
             this.render();
             if (this.state.showingTagForm) ui.focusNewTagInput();
         });
+        
         document.getElementById('search-input').addEventListener('input', (e) => {
             this.state.searchTerm = e.target.value;
             this.render();
         });
+        
+        const dateFilterBtn = document.getElementById('date-filter-btn');
+        if (dateFilterBtn && typeof jQuery !== 'undefined' && typeof moment !== 'undefined') {
+            $(dateFilterBtn).daterangepicker({
+                
+                opens: 'left',
+                autoUpdateInput: false,
+                locale: {
+                    format: 'DD/MM/YYYY',
+                    applyLabel: 'Aplicar',
+                    cancelLabel: 'Limpar',
+                    fromLabel: 'De',
+                    toLabel: 'Até',
+                    customRangeLabel: 'Intervalo Personalizado',
+                    weekLabel: 'S',
+                    daysOfWeek: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    monthNames: [
+                        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+                    ],
+                    firstDay: 1
+                },
+                ranges: {
+                   'Hoje': [moment(), moment()],
+                   'Ontem': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                   'Últimos 7 Dias': [moment().subtract(6, 'days'), moment()],
+                   'Últimos 30 Dias': [moment().subtract(29, 'days'), moment()],
+                   'Este Mês': [moment().startOf('month'), moment().endOf('month')],
+                   'Mês Passado': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                }
+            }, (start, end, label) => {
+                this.handleDateFilterChange(start, end);
+            });
+
+            $(dateFilterBtn).on('cancel.daterangepicker', (ev, picker) => {
+                this.handleDateFilterChange(null, null);
+            });
+        }
     }
 
     render = () => {
