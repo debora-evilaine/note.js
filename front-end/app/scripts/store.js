@@ -14,6 +14,8 @@ export const state = {
 
     isSelectionMode: false,
     selectedNoteIds: [],
+    startDateFilter: null,
+    endDateFilter: null,
 };
 
 export const addNote = (note) => {
