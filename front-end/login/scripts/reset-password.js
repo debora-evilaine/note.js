@@ -25,7 +25,9 @@ form.addEventListener('submit', async (e) => {
 
         messageDiv.style.color = 'green';
         messageDiv.textContent = data.message + ' Você será redirecionado para o login em 3 segundos.';
-        setTimeout(() => { window.location.href = '../index.html' }, 3000);
+       setTimeout(() => { 
+                      window.location.href = 'http://localhost:8080/index.html'; 
+        }, 3000);
     } catch (err) {
         messageDiv.style.color = 'red';
         messageDiv.textContent = err.message || 'Ocorreu um erro.';
