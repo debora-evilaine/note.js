@@ -103,3 +103,32 @@ body.dark-mode .forgot-password-link:hover {
   color: var(--primary-color-light);
   opacity: 1;
 }
+
+/* Styles for password rules container visibility */
+.rules-hidden {
+    display: none;
+}
+
+.password-container #password-rules.visible {
+    display: block;
+}
+
+#password-rules ul li.invalid {
+    color: #dc2626;
+}
+
+#password-rules ul li.valid {
+    color: #16a34a;
+}
+
+#password-rules {
+    transition: all 0.3s ease-in-out;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+}
+
+#password-rules.visible {
+    opacity: 1;
+    max-height: 200px;
+}
