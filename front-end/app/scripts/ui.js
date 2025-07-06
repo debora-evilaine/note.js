@@ -84,7 +84,7 @@ export const createInitialStructure = () => {
                         <line x1="3" y1="10" x2="21" y2="10"></line>
                     </svg>
                 </button>
-                <button id="create-new-note-btn" class="btn-icon"">
+                <button id="create-new-note-btn" class="btn-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -247,6 +247,11 @@ export const updateMainContent = (app) => {
 
         mainContent.innerHTML = `
             <div class="note-header">
+                <button class="btn-icon back-to-menu-btn" data-action="back-to-menu" title="Voltar ao Menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
                 <div class="note-info">
                     <span>Última atualização: ${new Date(state.selectedNote.updatedAt).toLocaleString()}</span>
                 </div>
@@ -344,6 +349,17 @@ export const updateDownloadButtonState = (app) => {
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
             `;
             toggleSelectionBtn.title = "Selecionar notas";
+        }
+    }
+};
+
+export const toggleMobileView = (showMainContent) => {
+    const appContainer = document.querySelector('.app-container');
+    if (window.innerWidth <= 768) {
+        if (showMainContent) {
+            appContainer.classList.add('show-main-content');
+        } else {
+            appContainer.classList.remove('show-main-content');
         }
     }
 };

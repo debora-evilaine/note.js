@@ -25,13 +25,34 @@
   background: var(--border-color-light);
 }
 
-/* Media Queries for Layout */
+.back-to-menu-btn {
+    display: none;
+}
+
+
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
     position: absolute;
     z-index: 10;
     height: 100%;
+    display: flex; 
+  }
+
+  .main-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 11; 
+    display: none;
+  }
+
+  .app-container.show-main-content .sidebar {
+    display: none;
+  }
+
+  .app-container.show-main-content .main-content {
+    display: flex;
   }
 
   .editor-container {
@@ -45,5 +66,9 @@
 
   .display-title {
     font-size: 1.5rem;
+  }
+
+  .back-to-menu-btn {
+      display: block; 
   }
 }
