@@ -1,39 +1,38 @@
-// app.js
-import * as ui from './ui.js'; // Importa todas as funções de manipulação da UI
-import * as api from './api.js'; // Importa todas as funções de interação com a API
+import * as ui from './ui.js'; 
+import * as api from './api.js'; 
 import {
     state
-} from './store.js'; // Importa o objeto de estado global
+} from './store.js'; 
 
 class NotesApp {
     constructor() {
-        this.state = state; // Referência ao objeto de estado global
-        this.token = sessionStorage.getItem('authToken'); // Obtém o token de autenticação do sessionStorage
-        this.userName = sessionStorage.getItem('userName'); // Obtém o nome do usuário do sessionStorage
-        this.init(); // Inicializa a aplicação
+        this.state = state; 
+        this.token = sessionStorage.getItem('authToken'); 
+        this.userName = sessionStorage.getItem('userName'); 
+        this.init(); 
     }
 
     init = () => {
         if (!this.token) {
             alert("Token de autenticação não encontrado. Por favor, faça login.");
-            window.location.href = '/'; // Redireciona para a página de login se não houver token
+            window.location.href = '/'; 
             return;
         }
-        ui.createInitialStructure(); // Cria a estrutura HTML inicial da UI
-        setupTheme(); // Configura o tema (claro/escuro)
-        this.bindGlobalEventListeners(); // Associa os listeners de eventos globais
-        this.fetchInitialData(); // Busca os dados iniciais (notas e tags)
+        ui.createInitialStructure(); 
+        setupTheme(); 
+        this.bindGlobalEventListeners(); 
+        this.fetchInitialData(); 
     }
 
     fetchInitialData = async () => {
         try {
             const [notesResponse, tagsResponse] = await Promise.all([
-                api.getNotes(this.token), // Busca notas
-                api.getTags(this.token) // Busca tags
+                api.getNotes(this.token), 
+                api.getTags(this.token) 
             ]);
-            this.state.notes = notesResponse.notes || notesResponse; // Atualiza o estado com as notas
-            this.state.tags = tagsResponse.tags || tagsResponse; // Atualiza o estado com as tags
-            this.render(); // Renderiza a UI com os novos dados
+            this.state.notes = notesResponse.notes || notesResponse; 
+            this.state.tags = tagsResponse.tags || tagsResponse; 
+            this.render(); 
         } catch (error) {
             console.error("Falha ao buscar dados iniciais:", error);
             alert(`Erro ao buscar dados: ${error.message}`);
@@ -133,9 +132,8 @@ class NotesApp {
     }
 
     selectNote = (noteToSelect) => {
-        // Ao selecionar uma nota no modo normal, sempre saia do modo de seleção
         this.state.isSelectionMode = false;
-        this.state.selectedNoteIds = []; // Limpa as notas que estavam selecionadas para download
+        this.state.selectedNoteIds = []; 
         this.state.selectedNote = noteToSelect;
         this.state.currentTitle = noteToSelect.title;
         this.state.currentNoteTags = [...(noteToSelect.tagIds || [])];
@@ -145,7 +143,6 @@ class NotesApp {
     }
 
     selectTag = (tagToSelect) => {
-        // Ao selecionar uma tag, sempre saia do modo de seleção
         this.state.isSelectionMode = false;
         this.state.selectedNoteIds = [];
         this.state.selectedTag = tagToSelect;
@@ -156,7 +153,6 @@ class NotesApp {
     }
 
     showAllNotes = () => {
-        // Ao mostrar todas as notas, sempre saia do modo de seleção
         this.state.isSelectionMode = false;
         this.state.selectedNoteIds = [];
         this.state.selectedTag = null;
@@ -245,12 +241,18 @@ class NotesApp {
         }
         this.state.selectedNote = null;
         this.state.isEditing = false;
-        this.render();
+        this.render(); 
     }
 
-    // Corrigido para chamar ui.toggleNoteSelection com 'this'
-    toggleNoteSelection = (noteId) => {
-        ui.toggleNoteSelection(this, noteId);
+    toggleNoteSelectionState = (noteId) => {
+        const index = this.state.selectedNoteIds.indexOf(noteId);
+        if (index > -1) {
+            this.state.selectedNoteIds.splice(index, 1);
+        } else {
+            this.state.selectedNoteIds.push(noteId);
+        }
+        ui.updateNotesList(this); 
+        ui.updateDownloadButtonState(this); 
     }
 
     downloadSelectedNotes = async () => {
@@ -302,7 +304,7 @@ class NotesApp {
                         break;
                     case 'select-note':
                         if (this.state.isSelectionMode) {
-                            this.toggleNoteSelection(noteId);
+                            this.toggleNoteSelectionState(noteId); 
                         } else {
                             const note = this.state.notes.find(n => n.id === noteId);
                             if (note) this.selectNote(note);
@@ -332,7 +334,7 @@ class NotesApp {
 
             if (e.target.classList.contains('note-select-checkbox')) {
                 const noteId = e.target.dataset.noteId;
-                this.toggleNoteSelection(noteId);
+                this.toggleNoteSelectionState(noteId); 
             }
         });
 
