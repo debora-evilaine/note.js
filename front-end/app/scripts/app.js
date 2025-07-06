@@ -54,7 +54,7 @@ class NotesApp {
         let notes = this.state.showingAllNotes ?
             this.state.notes :
             this.state.notes.filter(note => note.tagIds.includes(this.state.selectedTag.id));
-       
+        
 
         if (this.state.searchTerm) {
             const term = this.state.searchTerm.toLowerCase();
@@ -246,7 +246,7 @@ class NotesApp {
             this.state.notes = this.state.notes.filter(n => n.id !== noteId);
             if (this.state.selectedNote && this.state.selectedNote.id === noteId) {
                 this.state.selectedNote = null;
-                // On mobile, if the selected note is deleted, go back to sidebar view
+             
                 if (window.innerWidth <= 768) {
                     ui.toggleMobileView(false);
                 }
@@ -295,8 +295,16 @@ class NotesApp {
         }
     }
 
-    toggleNoteSelection = (noteId) => {
-        ui.toggleNoteSelection(this, noteId);
+    toggleNoteSelectionState = (noteId) => { 
+        const index = this.state.selectedNoteIds.indexOf(noteId);
+        if (index > -1) {
+            this.state.selectedNoteIds.splice(index, 1);
+        } else {
+            this.state.selectedNoteIds.push(noteId);
+        }
+       
+        ui.updateNotesList(this);
+        ui.updateDownloadButtonState(this);
     }
 
     downloadSelectedNotes = async () => {
@@ -348,7 +356,8 @@ class NotesApp {
                         break;
                     case 'select-note':
                         if (this.state.isSelectionMode) {
-                            this.toggleNoteSelection(noteId);
+                          
+                            this.toggleNoteSelectionState(noteId); 
                         } else {
                             const note = this.state.notes.find(n => n.id === noteId);
                             if (note) this.selectNote(note);
@@ -384,7 +393,8 @@ class NotesApp {
 
             if (e.target.classList.contains('note-select-checkbox')) {
                 const noteId = e.target.dataset.noteId;
-                this.toggleNoteSelection(noteId);
+              
+                this.toggleNoteSelectionState(noteId);
             }
         });
 
