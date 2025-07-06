@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Note.Js</title>
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body>
+    <div id="auth-container">
+        <h1>Crie sua Conta</h1>
+
+        <form id="register-form">
+            <h2>É rápido e fácil.</h2>
+            <input type="text" id="register-name" placeholder="Seu Nome" required>
+            <input type="email" id="register-email" placeholder="Email" required>
+
+            <div class="password-container">
+                <input type="password" id="register-password" placeholder="Crie uma Senha" required>
+                <div id="password-rules" class="rules-hidden">
+    <h4>A senha deve conter:</h4>
+    <ul>
+        <li id="rule-length" class="invalid">Pelo menos 8 caracteres</li>
+        <li id="rule-uppercase" class="invalid">Uma letra maiúscula (A-Z)</li>
+        <li id="rule-lowercase" class="invalid">Uma letra minúscula (a-z)</li>
+        <li id="rule-number" class="invalid">Pelo menos um número (0-9)</li>
+        <li id="rule-special" class="invalid">Um caractere especial (!@#$...)</li>
+    </ul>
+</div>
+
+            <button type="submit">Cadastrar</button>
+        </form>
+
+        <hr>
+        <p>Já tem uma conta? <a href="../../index.html" class="link-btn">Faça o login</a></p>
+
+    </div>
+
+    <script src="../scripts/register.js"></script>
+</body>
+</html>

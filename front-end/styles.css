@@ -1,4 +1,3 @@
-/* Base Styles & Typography */
 * {
   margin: 0;
   padding: 0;
@@ -6,12 +5,11 @@
 }
 
 :root {
-  /* Light Mode Colors */
   --bg-color-light: #f9fafb;
   --bg-color-content-light: #ffffff;
   --text-color-light: #222222;
-  --primary-color-light: #3b82f6; /* Blue */
-  --secondary-color-light: #6b7280; /* Gray */
+  --primary-color-light: #3b82f6; 
+  --secondary-color-light: #6b7280; 
   --border-color-light: #e5e7eb;
   --hover-color-light: #f3f4f6;
   --selected-bg-light: #dbeafe;
@@ -23,7 +21,6 @@
   --delete-hover-bg-light: #fef2f2;
 }
 
-/* Dark Mode Variables - Overrides light mode */
 body.dark-mode {
   --bg-color-light: #1a1a1a;
   --bg-color-content-light: #121212;
@@ -50,7 +47,6 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* Global Dark Mode Adjustments */
 body.dark-mode .app-container,
 body.dark-mode .sidebar,
 body.dark-mode .main-content,
@@ -192,8 +188,6 @@ body.dark-mode .search-highlight-text {
   background-color: var(--highlight-bg-light);
   color: var(--highlight-text-light);
 }
-
-/* Date Range Picker Specific Styles for Dark Mode */
 body.dark-mode .daterangepicker {
   color: var(--text-color-light);
   background-color: var(--bg-color-content-light);
@@ -242,7 +236,6 @@ body.dark-mode .daterangepicker .ranges li:hover {
   background-color: var(--hover-color-light);
 }
 
-/* Scrollbar Styles */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -271,8 +264,6 @@ body.dark-mode ::-webkit-scrollbar-thumb {
 body.dark-mode ::-webkit-scrollbar-thumb:hover {
   background: #777;
 }
-
-/* Theme Toggle Button */
 .theme-toggle-button {
   position: fixed;
   bottom: 20px;
@@ -293,4 +284,149 @@ body.dark-mode ::-webkit-scrollbar-thumb:hover {
 
 .theme-toggle-button:hover {
   transform: scale(1.1);
+}
+
+#auth-container {
+  background-color: var(--bg-color-content-light);
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#auth-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; 
+}
+
+#auth-container h1 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--text-color-light);
+}
+
+#auth-container h2 {
+  font-size: 1.2rem;
+  color: #333; 
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+#auth-container input[type="text"],
+#auth-container input[type="email"],
+#auth-container input[type="password"] {
+  padding: 12px;
+  border: 1px solid #dddfe2;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+#auth-container input[type="text"]:focus,
+#auth-container input[type="email"]:focus,
+#auth-container input[type="password"]:focus {
+  outline: none;
+  border-color: var(--primary-color-light);
+  box-shadow: 0 0 0 3px var(--selected-shadow-light);
+}
+
+#auth-container button[type="submit"] {
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--primary-color-light);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#auth-container button[type="submit"]:hover {
+  opacity: 0.9;
+}
+
+#auth-container hr {
+  border: none;
+  border-top: 1px solid var(--border-color-light);
+  margin: 25px 0;
+}
+
+#auth-container p {
+    color: var(--text-color-light);
+}
+
+#auth-container .link-btn,
+#auth-container .forgot-password-link {
+    color: var(--primary-color-light);
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+#auth-container .link-btn:hover,
+#auth-container .forgot-password-link:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+}
+#auth-container .forgot-password-link {
+    display: block;
+    text-align: right;
+    margin-top: 10px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.password-rules-static {
+  background-color: #f3f4f6;
+  border-radius: 6px;
+  padding: 12px 12px 12px 30px;
+  margin-top: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.password-rules-static ul {
+  list-style-type: none; 
+  padding-left: 0;       
+  margin: 0;
+}
+
+.password-rules-static li {
+  font-size: 0.85rem;
+  color: #4b5563;
+  margin-bottom: 5px;
+  text-align: left; 
+}
+
+body.dark-mode .password-rules-static {
+    background-color: var(--secondary-color-light);
+    border-color: var(--border-color-light);
+}
+
+body.dark-mode .password-rules-static li {
+    color: var(--text-color-light);
+    opacity: 0.8;
+}
+
+body.dark-mode #auth-container {
+    background-color: var(--secondary-color-light);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode #auth-container h2 {
+    color: var(--text-color-light);
+    opacity: 0.8;
+}
+
+body.dark-mode #auth-container input[type="text"],
+body.dark-mode #auth-container input[type="email"],
+body.dark-mode #auth-container input[type="password"] {
+    background-color: var(--bg-color-light);
+    border-color: var(--border-color-light);
+    color: var(--text-color-light);
 }
