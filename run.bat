@@ -1,116 +1,131 @@
-@echo off
+@ECHO OFF
+SETLOCAL ENABLEDELAYEDEXPANSION
+
+REM Store current directory to restore later
+SET "ORIGINAL_DIR=%CD%"
+
 REM =================================================================
-REM  Project Runner Script for Note.js
-REM  This script sets up environment variables and starts the
-REM  backend (API) and/or frontend servers.
+REM Project Runner Script for Node.js (Windows Batch)
 REM =================================================================
 
-REM --- Step 1: Set Default Environment Variables ---
-REM If the environment variables are not already set in your system,
-REM this script will use these default values for this session.
-echo Checking for api\.env file...
+SET "DEFAULT_MONGO_URI=mongodb://localhost:27017/notesdb"
+SET "DEFAULT_JWT_SECRET=this-is-a-super-secret-key-for-dev"
+SET "DEFAULT_PORT=5000"
+SET "DEFAULT_EMAIL_USER="
+SET "DEFAULT_EMAIL_PASS="
+SET "DEFAULT_FRONTEND_URL=http://localhost:8080"
 
-IF EXIST api\.env (
-    echo   Found api\.env file. The application will use its variables.
-    REM If the .env file exists, we assume the PORT might be defined there.
+IF NOT DEFINED MONGO_URI SET "MONGO_URI=%DEFAULT_MONGO_URI%"
+IF NOT DEFINED JWT_SECRET SET "JWT_SECRET=%DEFAULT_JWT_SECRET%"
+IF NOT DEFINED PORT SET "PORT=%DEFAULT_PORT%"
+IF NOT DEFINED EMAIL_USER SET "EMAIL_USER=%DEFAULT_EMAIL_USER%"
+IF NOT DEFINED EMAIL_PASS SET "EMAIL_PASS=%DEFAULT_EMAIL_PASS%"
+IF NOT DEFINED FRONTEND_URL SET "FRONTEND_URL=%DEFAULT_FRONTEND_URL%"
+
+ECHO Checking for api\.env file
+
+SET "ENV_FILE=api\.env"
+
+IF EXIST "%ENV_FILE%" (
+    ECHO     Found %ENV_FILE%. Using existing environment variables.
 ) ELSE (
-    echo   api\.env file not found.
-    echo   Setting default environment variables for this session.
-
-    if not defined MONGO_URI (
-        set "MONGO_URI=mongodb://localhost:27017/notesdb"
-        echo     MONGO_URI not set. Using default: %MONGO_URI%
-    ) else (
-        echo     MONGO_URI is already set.
+    ECHO     %ENV_FILE% not found. Creating with default variables
+    MD api 2>NUL
+    IF NOT EXIST "api\" (
+        ECHO Error: Could not create "api" directory.
+        EXIT /B 1
     )
+    (
+        ECHO MONGO_URI=%MONGO_URI%
+        ECHO JWT_SECRET=%JWT_SECRET%
+        ECHO PORT=%PORT%
+        ECHO EMAIL_USER=%EMAIL_USER%
+        ECHO EMAIL_PASS=%EMAIL_PASS%
+        ECHO FRONTEND_URL=%FRONTEND_URL%
+    ) > "%ENV_FILE%"
 
-    if not defined JWT_SECRET (
-        set "JWT_SECRET=this-is-a-super-secret-key-for-dev"
-        echo     JWT_SECRET not set. Using default.
-    ) else (
-        echo     JWT_SECRET is already set.
-    )
+    ECHO     Created %ENV_FILE% with:
+    ECHO       MONGO_URI: %MONGO_URI%
+    ECHO       JWT_SECRET: [hidden]
+    ECHO       PORT: %PORT%
+    ECHO       EMAIL_USER: %EMAIL_USER%
+    ECHO       FRONTEND_URL: %FRONTEND_URL%
+)
 
-    if not defined PORT (
-        set "PORT=5000"
-        echo     API PORT not set. Using default: %PORT%
-    ) else (
-        echo     API PORT is already set.
+ECHO.
+ECHO =================================================================
+ECHO.
+
+REM --- Main Menu ---
+:menu_loop
+ECHO Choose which server to run:
+ECHO     [1] Backend API only (port %PORT%)
+ECHO     [2] Frontend only (%FRONTEND_URL%)
+ECHO     [3] Both Backend and Frontend
+ECHO     [4] Exit
+ECHO.
+SET /P CHOICE="Enter your choice: "
+
+IF "%CHOICE%"=="1" (
+    CALL :start_backend
+    GOTO :end_script
+) ELSE IF "%CHOICE%"=="2" (
+    CALL :start_frontend
+    GOTO :end_script
+) ELSE IF "%CHOICE%"=="3" (
+    ECHO Starting both servers
+    START "Node.js Backend" cmd /c "CD /D "%CD%\api" && CALL npm install && CALL npm run dev"
+    TIMEOUT /T 5 /NOBREAK >NUL
+    CALL :start_frontend
+    ECHO Attempting to kill all Node.js processes (node.exe)
+    TASKKILL /IM node.exe /F >NUL 2>NUL
+    GOTO :end_script
+) ELSE IF "%CHOICE%"=="4" (
+    ECHO Exiting.
+    GOTO :end_script
+) ELSE (
+    ECHO Invalid option. Try again.
+    ECHO.
+    GOTO :menu_loop
+)
+
+:end_script
+CD /D "%ORIGINAL_DIR%"
+ECHO.
+ECHO Script finished.
+GOTO :EOF
+
+REM === Backend Start ===
+:start_backend
+ECHO Starting Backend API
+CD /D "%ORIGINAL_DIR%\api" || (ECHO Error: 'api' dir not found. && EXIT /B 1)
+CALL npm install
+CALL npm run dev
+CD /D "%ORIGINAL_DIR%"
+GOTO :EOF
+
+REM === Frontend Start ===
+:start_frontend
+ECHO Starting Frontend Web Server
+CD /D "%ORIGINAL_DIR%\front-end" || (ECHO Error: 'front-end' dir not found. && EXIT /B 1)
+
+WHERE http-server >NUL 2>NUL
+IF %ERRORLEVEL% NEQ 0 (
+    ECHO 'http-server' not found.
+    SET /P REPLY="Install 'http-server' globally now? (y/n) "
+    IF /I "%REPLY%"=="y" (
+        CALL npm install -g http-server
+    ) ELSE (
+        ECHO Please run: npm install -g http-server
+        CD /D "%ORIGINAL_DIR%"
+        EXIT /B 1
     )
 )
 
-echo.
-echo =================================================================
-echo.
+FOR /F "tokens=3 delims=:" %%P IN ("%FRONTEND_URL%") DO SET "FRONTEND_PORT=%%P"
+IF NOT DEFINED FRONTEND_PORT SET "FRONTEND_PORT=8080"
 
-:menu
-    REM --- Step 2: Present the User with a Choice ---
-    echo Please choose which server to run:
-    echo   [1] Backend API only (on port %PORT%)
-    echo   [2] Frontend Web Server only (on port 8080)
-    echo   [3] Both Backend and Frontend (in separate windows)
-    echo   [4] Exit
-    echo.
-
-    CHOICE /C 1234 /M "Enter your choice: "
-
-    IF ERRORLEVEL 4 GOTO end
-    IF ERRORLEVEL 3 GOTO both
-    IF ERRORLEVEL 2 GOTO frontend
-    IF ERRORLEVEL 1 GOTO backend
-
-:backend
-    REM --- Run Backend Only ---
-    echo Starting Backend API...
-    cd api
-    echo Installing dependencies if needed...
-    npm install
-    echo Starting server with nodemon...
-    npm run dev
-GOTO end
-
-:frontend
-    REM --- Run Frontend Only ---
-    REM The 'http-server' package is a simple way to host a static site.
-    echo Starting Frontend Web Server...
-    cd front-end
-    echo Checking for the 'serve' package...
-
-    REM Check if 'http-server' is installed, if not, offer to install it.
-    where /q http-server
-    if %errorlevel% neq 0 (
-        echo 'http-server' package not found. It is required to run the frontend server.
-        CHOICE /C YN /M "Do you want to install it globally now? (y/n)"
-        if errorlevel 2 (
-            echo You can install it manually by running: npm install -g http-server
-            goto end
-        )
-        npm install -g http-server
-    )
-
-    echo Starting web server on http://localhost:8080
-    http-server -p 8080
-GOTO end
-
-:both
-    REM --- Run Both Servers ---
-    echo Starting both Backend and Frontend servers in separate windows.
-
-    REM Start the Backend API in a new window
-    echo Starting Backend API in a new cmd window...
-    start "Backend API" cmd /c "cd api && npm install && npm run dev"
-
-    REM Give the backend a moment to start up
-    timeout /t 5 >nul
-
-    REM Start the Frontend in a new window
-    echo Starting Frontend Web Server in a new cmd window...
-    start "Frontend Server" cmd /c "cd front-end && (where /q http-server || npm install -g http-server) && http-server -p 8080"
-
-    echo Both servers have been launched in new windows.
-GOTO end
-
-:end
-echo.
-echo Script finished.
-pause
+ECHO Starting on %FRONTEND_URL% (port %FRONTEND_PORT%)
+CALL npx http-server . -p %FRONTEND_PORT%
+CD /D "%ORIGINAL_DIR%"
+GOTO :EOF
