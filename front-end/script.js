@@ -20,34 +20,11 @@ class NotesApp {
 
     if (this.token) {
       this.showApp();
-    } else {
-      this.showAuth();
     }
   }
 
-  showAuth() {
-    this.authContainer.style.display = 'block';
-    this.appContainer.style.display = 'none';
-  }
-
-  // async showApp() {
-  //   this.authContainer.style.display = 'none';
-  //   this.appContainer.style.display = 'block';
-
-  //   if (!this.appContainer.querySelector('.app-container')) {
-  //     ui.createInitialStructure();
-  //     this.bindGlobalEvents();
-  //   }
-
-  //   await this.fetchInitialData();
-
-  //   this.render();
-  // }
-
-
-
   async showApp() {
-  window.location.replace(APP_URL + "/app/html/app.html")
+    window.location.replace(APP_URL + "/app/html/app.html")
   }
 
   async handleRegister(event) {
