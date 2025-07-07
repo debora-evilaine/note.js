@@ -240,7 +240,7 @@ class NotesApp {
     }
 
     deleteNote = async (noteId) => {
-        if (!confirm("Tem certeza de que deseja deletar esta nota?")) return;
+        
         try {
             await api.deleteNote(noteId, this.token);
             this.state.notes = this.state.notes.filter(n => n.id !== noteId);
@@ -260,7 +260,7 @@ class NotesApp {
     }
 
     deleteTag = async (tagId) => {
-        if (!confirm("Tem certeza de que deseja deletar esta tag? Isso removerá a tag de todas as notas.")) return;
+        
         try {
             await api.deleteTag(tagId, this.token);
             this.state.tags = this.state.tags.filter(t => t.id !== tagId);
