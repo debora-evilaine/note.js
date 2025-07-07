@@ -1,4 +1,8 @@
 export const renderMarkdown = (text) => {
+    window.marked.setOptions({
+        breaks: true,
+        gfm: true
+    });
     return window.marked.parse(text);
 };
 
