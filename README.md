@@ -5,11 +5,11 @@ This web application is currently under development for an IFSP (Intituto Federa
 Its main objective is to utilize the knowledge acquired in the course to create a quick note-taking web application.
 
 By
->
->Pedro Faustino
->Débora 
->Vitória
->Leandro
+<
+<Pedro Faustino
+<Débora 
+<Vitória
+<Leandro
 
 ---
 
