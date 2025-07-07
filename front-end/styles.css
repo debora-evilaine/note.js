@@ -63,6 +63,10 @@ body.dark-mode .tag-creation-form {
   background-color: var(--bg-color-light);
 }
 
+body.dark-mode .note-content pre{
+  background-color: var(--secondary-color-light) ;
+}
+
 body.dark-mode .sidebar {
   background-color: var(--secondary-color-light);
   border-right-color: var(--border-color-light);
