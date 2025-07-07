@@ -336,3 +336,7 @@
   font-size: 0.625rem;
   color: #9ca3af;
 }
+
+.notes-actions{
+  display: flex;
+}
