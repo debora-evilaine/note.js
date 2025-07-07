@@ -1,10 +1,12 @@
+import { showNotification } from './notifications.js';
+
 document.getElementById('forgot-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('email-input').value;
-    const messageDiv = document.getElementById('message');
     const button = e.target.querySelector('button');
+
     button.disabled = true;
-    messageDiv.textContent = 'Enviando...';
+    showNotification('Enviando...', 'info');
 
     try {
         const response = await fetch('http://localhost:5000/api/users/forgot-password', {
@@ -13,11 +15,11 @@ document.getElementById('forgot-form').addEventListener('submit', async (e) => {
             body: JSON.stringify({ email })
         });
         const data = await response.json();
-        messageDiv.style.color = 'green';
-        messageDiv.textContent = data.message;
+        
+        showNotification(data.message, 'success');
+
     } catch (err) {
-        messageDiv.style.color = 'red';
-        messageDiv.textContent = 'Ocorreu um erro. Tente novamente.';
+        showNotification('Ocorreu um erro. Tente novamente.', 'error');
         button.disabled = false;
     }
 });

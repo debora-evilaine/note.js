@@ -1,3 +1,4 @@
+import { showNotification } from '/login/scripts/notifications.js';
 
 const API_URL = 'http://localhost:5000';
 const APP_URL = 'http://localhost:8080';
@@ -27,60 +28,43 @@ class NotesApp {
     window.location.replace(APP_URL + "/app/html/app.html")
   }
 
-  async handleRegister(event) {
-    event.preventDefault();
-    const name = document.getElementById('register-name').value;
-    const email = document.getElementById('register-email').value;
-    const password = document.getElementById('register-password').value;
-
-    try {
-      const response = await fetch(`${API_URL}/api/users/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Falha no cadastro');
-      }
-
-      alert('Cadastro realizado com sucesso! Por favor, faça o login.');
-      document.getElementById('register-form').reset();
-    } catch (error) {
-      alert(error.message);
-    }
-  }
-
   async handleLogin(event) {
     event.preventDefault();
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
+    const button = event.target.querySelector('button');
+
+    button.disabled = true;
+    button.textContent = 'Entrando...';
 
     try {
-      const response = await fetch(`${API_URL}/api/users/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
+        const response = await fetch(`${API_URL}/api/users/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Falha no login');
-      }
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Falha no login');
+        }
 
-      sessionStorage.setItem('authToken', data.token);
-      sessionStorage.setItem('userName', data.user.name);
-      this.token = data.token;
-      this.showApp();
+        sessionStorage.setItem('authToken', data.token);
+        sessionStorage.setItem('userName', data.user.name);
+        this.token = data.token;
+        
+        showNotification('Login bem-sucedido! Redirecionando...', 'success');
 
-      alert('Login bem-sucedido!');
-      this.showApp();
+        setTimeout(() => {
+            this.showApp(); 
+        }, 1500); 
 
     } catch (error) {
-      alert(error.message);
+        showNotification(error.message, 'error');
+        button.disabled = false;
+        button.textContent = 'Entrar';
     }
-  }
+}
 
   logout() {
     this.token = null;
