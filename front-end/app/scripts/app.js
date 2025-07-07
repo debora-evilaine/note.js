@@ -315,7 +315,7 @@ class NotesApp {
 
         try {
             await api.downloadNotes(this.state.selectedNoteIds, this.token);
-            alert("PDF gerado e download iniciado!");
+           
             this.toggleSelectionMode();
         } catch (error) {
             console.error("Erro ao baixar notas:", error);
